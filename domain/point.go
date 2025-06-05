@@ -8,7 +8,7 @@ import (
 
 type (
 	PointRepository interface {
-		GetPointByUserID(ctx context.Context, userID string) (Point error)
+		GetPointByUserID(ctx context.Context, userID string) (Point, error)
 		UpdatePointByUserID(ctx context.Context, point Point) error
 	}
 

@@ -20,6 +20,7 @@ type (
 	}
 )
 
+// TODO:
 func NewPointAddInterceptor(
 	repo domain.PointRepository,
 ) PointAddUseCase {
@@ -30,5 +31,13 @@ func NewPointAddInterceptor(
 
 // TODO: 実行内容を加える UPSERT
 func (p pointAddInterceptor) Execute(ctx context.Context, input PointAddInput) error {
-	return nil
+	currentUserPoint, err := p.repo.GetPointByUserID(ctx, input.UserID)
+	if err != nil {
+		return err
+	}
+	addedPoints, err := domain.NewPoint(currentUserPoint.UserID, currentUserPoint.PointNum+input.PointNum)
+	if err != nil {
+		return err
+	}
+	return p.repo.UpdatePointByUserID(ctx, addedPoints) //TODO: そのまま返さない方がいいかもしてない
 }
