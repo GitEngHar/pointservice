@@ -8,11 +8,11 @@ import (
 )
 
 type (
-	PointAddUseCase interface {
-		Execute(context.Context, *PointAddInput) error
+	PointAddOrCreateUseCase interface {
+		Execute(context.Context, *PointAddOrCreateInput) error
 	}
 
-	PointAddInput struct {
+	PointAddOrCreateInput struct {
 		UserID   string `json:"user_id"`
 		PointNum int    `json:"point_num"`
 	}
@@ -23,15 +23,15 @@ type (
 )
 
 // TODO:
-func NewPointAddInterceptor(
+func NewPointAddOrCreateInterceptor(
 	repo domain.PointRepository,
-) PointAddUseCase {
+) PointAddOrCreateUseCase {
 	return pointAddInterceptor{
 		repo: repo,
 	}
 }
 
-func (p pointAddInterceptor) Execute(ctx context.Context, input *PointAddInput) error {
+func (p pointAddInterceptor) Execute(ctx context.Context, input *PointAddOrCreateInput) error {
 	currentUserPoint, err := p.repo.GetPointByUserID(ctx, input.UserID)
 	if err != nil {
 		// Sql.ErrNoRows are tolerated as new users are created.
