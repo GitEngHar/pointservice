@@ -7,7 +7,7 @@ import (
 
 type (
 	PointSubUseCase interface {
-		Execute(context.Context, PointSubInput) error
+		Execute(context.Context, *PointSubInput) error
 	}
 
 	PointSubInput struct {
@@ -24,13 +24,13 @@ type (
 func NewPointSubInterceptor(
 	repo domain.PointRepository,
 ) PointSubUseCase {
-	return &pointSubInterceptor{
+	return pointSubInterceptor{
 		repo: repo,
 	}
 }
 
 // TODO: 実行内容を加える UPSERT
-func (p *pointSubInterceptor) Execute(ctx context.Context, input PointSubInput) error {
+func (p pointSubInterceptor) Execute(ctx context.Context, input *PointSubInput) error {
 	currentUserPoint, err := p.repo.GetPointByUserID(ctx, input.UserID)
 	if err != nil {
 		return err
