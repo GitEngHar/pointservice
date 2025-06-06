@@ -10,6 +10,7 @@ type (
 	PointRepository interface {
 		GetPointByUserID(ctx context.Context, userID string) (Point, error)
 		UpdatePointByUserID(ctx context.Context, point Point) error
+		UpdatePointOrCreateByUserID(ctx context.Context, point Point) error
 	}
 
 	Point struct {
