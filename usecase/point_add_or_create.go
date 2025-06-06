@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"pointservice/domain"
 )
 
@@ -22,7 +23,6 @@ type (
 	}
 )
 
-// TODO:
 func NewPointAddOrCreateInterceptor(
 	repo domain.PointRepository,
 ) PointAddOrCreateUseCase {
@@ -40,12 +40,12 @@ func (p pointAddInterceptor) Execute(ctx context.Context, input *PointAddOrCreat
 			currentUserPoint.UserID = input.UserID
 			currentUserPoint.PointNum = 0
 		} else {
-			return err
+			return fmt.Errorf("failed select target user: %w", err)
 		}
 	}
 	addedPoints, err := domain.NewPoint(currentUserPoint.UserID, currentUserPoint.PointNum+input.PointNum)
 	if err != nil {
-		return err
+		return fmt.Errorf("new point create filed: %w", err)
 	}
 	return p.repo.UpdatePointOrCreateByUserID(ctx, addedPoints)
 }

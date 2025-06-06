@@ -29,10 +29,8 @@ func ConnectDB() (*sql.DB, func() error) {
 	connectDBUri := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", connectDBInfo.dbUser, connectDBInfo.dbPassword, connectDBInfo.dbHost, connectDBInfo.dbPort, connectDBInfo.dbName)
 	db, err := sql.Open("mysql", connectDBUri)
 	if err != nil {
-		panic(err)
+		log.Fatalf("sql open failed: %s", err)
 	}
-
-	// ConnectionPool Setting
 	// TODO: to env params
 	db.SetMaxOpenConns(5)
 	db.SetMaxIdleConns(2)
@@ -46,7 +44,7 @@ func ConnectDB() (*sql.DB, func() error) {
 		}
 		connectRetryNum++
 	}
-	fmt.Println("db connected!!")
+	fmt.Println("db connected!!	")
 	return db, func() error {
 		// db close closure
 		return db.Close()

@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"fmt"
 	"pointservice/domain"
 )
 
@@ -31,11 +32,11 @@ func NewPointSubInterceptor(
 func (p pointSubInterceptor) Execute(ctx context.Context, input *PointSubInput) error {
 	currentUserPoint, err := p.repo.GetPointByUserID(ctx, input.UserID)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed select target user: %w", err)
 	}
-	addedPoints, err := domain.NewPoint(currentUserPoint.UserID, currentUserPoint.PointNum-input.PointNum)
+	subtractedPoints, err := domain.NewPoint(currentUserPoint.UserID, currentUserPoint.PointNum-input.PointNum)
 	if err != nil {
-		return err
+		return fmt.Errorf("new point create filed: %w", err)
 	}
-	return p.repo.UpdatePointByUserID(ctx, addedPoints)
+	return p.repo.UpdatePointByUserID(ctx, subtractedPoints)
 }
