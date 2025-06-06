@@ -21,13 +21,12 @@ func NewPointHandler(db *sql.DB, pointRepository repository.PointRepository) *Po
 }
 
 func (p *PointHandler) PointAdd(c echo.Context) error {
-	fmt.Println("Recieved PointAdd")
+	fmt.Println("Recieved PointAdd Request")
 	ctx := c.Request().Context()
 	pointDTO := new(usecase.PointAddInput)
 	if err := c.Bind(pointDTO); err != nil {
 		return err
 	}
-	fmt.Println("Bind json request")
 	uc := usecase.NewPointAddInterceptor(p.repo)
 	if err := uc.Execute(ctx, pointDTO); err != nil {
 		fmt.Println(err)
@@ -39,6 +38,17 @@ func (p *PointHandler) PointAdd(c echo.Context) error {
 }
 
 func (p *PointHandler) PointSub(c echo.Context) error {
-	returnMassage := "pointSub"
+	fmt.Println("Recieved PointSub Request")
+	ctx := c.Request().Context()
+	pointDTO := new(usecase.PointSubInput)
+	if err := c.Bind(pointDTO); err != nil {
+		return err
+	}
+	uc := usecase.NewPointSubInterceptor(p.repo)
+	if err := uc.Execute(ctx, pointDTO); err != nil {
+		fmt.Println(err)
+		return err
+	}
+	returnMassage := "Success"
 	return c.String(http.StatusOK, returnMassage)
 }
