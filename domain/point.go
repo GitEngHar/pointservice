@@ -3,6 +3,7 @@ package domain
 import (
 	"context"
 	"errors"
+	"fmt"
 	"regexp"
 )
 
@@ -19,6 +20,10 @@ type (
 	}
 )
 
+var (
+	ErrPointBelowZero = errors.New("points must be greater than 0")
+)
+
 func isCorrectFormatUserID(target string) bool {
 	re := regexp.MustCompile(`^[a-zA-Z0-9]+$`)
 	return re.MatchString(target)
@@ -26,10 +31,10 @@ func isCorrectFormatUserID(target string) bool {
 
 func NewPoint(userID string, pointNum int) (Point, error) {
 	if !isCorrectFormatUserID(userID) {
-		return Point{}, errors.New("userID is not correct format :" + userID)
+		return Point{}, fmt.Errorf("userID is not correct format: %s", userID)
 	}
 	if 0 > pointNum {
-		return Point{}, errors.New("points must be greater than 0")
+		return Point{}, ErrPointBelowZero
 	}
 	return Point{
 		UserID:   userID,

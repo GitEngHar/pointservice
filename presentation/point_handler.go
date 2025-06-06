@@ -21,24 +21,23 @@ func NewPointHandler(db *sql.DB, pointRepository repository.PointRepository) *Po
 }
 
 func (p *PointHandler) PointAdd(c echo.Context) error {
-	fmt.Println("Recieved PointAdd Request")
+	fmt.Println("Received PointAdd Request")
 	ctx := c.Request().Context()
 	pointDTO := new(usecase.PointAddOrCreateInput)
 	if err := c.Bind(pointDTO); err != nil {
-		return err
+		return fmt.Errorf("json format bind err: %w", err)
 	}
 	uc := usecase.NewPointAddOrCreateInterceptor(p.repo)
 	if err := uc.Execute(ctx, pointDTO); err != nil {
-		fmt.Println(err)
-		return err
+		return fmt.Errorf("point add or one user create error: %w", err)
 	}
-	fmt.Println("point added")
+	fmt.Println("Success point added")
 	returnMassage := "Success"
 	return c.String(http.StatusOK, returnMassage)
 }
 
 func (p *PointHandler) PointSub(c echo.Context) error {
-	fmt.Println("Recieved PointSub Request")
+	fmt.Println("Received PointSub Request")
 	ctx := c.Request().Context()
 	pointDTO := new(usecase.PointSubInput)
 	if err := c.Bind(pointDTO); err != nil {
@@ -47,8 +46,9 @@ func (p *PointHandler) PointSub(c echo.Context) error {
 	uc := usecase.NewPointSubInterceptor(p.repo)
 	if err := uc.Execute(ctx, pointDTO); err != nil {
 		fmt.Println(err)
-		return err
+		return fmt.Errorf("point subtraction error: %w", err)
 	}
+	fmt.Println("Success point subtraction")
 	returnMassage := "Success"
 	return c.String(http.StatusOK, returnMassage)
 }
