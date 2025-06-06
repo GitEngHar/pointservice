@@ -2,7 +2,7 @@ package infra
 
 import (
 	"github.com/labstack/echo/v4"
-	"net/http"
+	"pointservice/presentation"
 )
 
 type Router struct {
@@ -15,18 +15,8 @@ func NewRouter(server *echo.Echo) Router {
 	}
 }
 
-func (r Router) pointAdd(c echo.Context) error {
-	returnMassage := "pointAdd"
-	return c.String(http.StatusOK, returnMassage)
-}
-
-func (r Router) pointSub(c echo.Context) error {
-	returnMassage := "pointSub"
-	return c.String(http.StatusOK, returnMassage)
-}
-
-func (r Router) exec() {
+func (r *Router) exec(h *presentation.PointHandler) {
 	e := r.server
-	e.GET("/point/add", r.pointAdd)
-	e.GET("/point/sub", r.pointSub)
+	e.PUT("/point/add", h.PointAdd)
+	e.PUT("/point/sub", h.PointSub)
 }
