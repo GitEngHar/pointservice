@@ -23,11 +23,11 @@ func NewPointHandler(db *sql.DB, pointRepository repository.PointRepository) *Po
 func (p *PointHandler) PointAdd(c echo.Context) error {
 	fmt.Println("Recieved PointAdd Request")
 	ctx := c.Request().Context()
-	pointDTO := new(usecase.PointAddInput)
+	pointDTO := new(usecase.PointAddOrCreateInput)
 	if err := c.Bind(pointDTO); err != nil {
 		return err
 	}
-	uc := usecase.NewPointAddInterceptor(p.repo)
+	uc := usecase.NewPointAddOrCreateInterceptor(p.repo)
 	if err := uc.Execute(ctx, pointDTO); err != nil {
 		fmt.Println(err)
 		return err
