@@ -19,14 +19,13 @@ func NewPointSQL(db *sql.DB) PointRepository {
 }
 
 func (p PointRepository) GetPointByUserID(ctx context.Context, userID string) (domain.Point, error) {
-	// TODO: DB トランザクション管理をする
 	var query = `SELECT point_num FROM point_root WHERE user_id=?`
-	// TODO: 取得した値を処理する
 	row := p.db.QueryRowContext(ctx, query, userID)
 	var pointNum int
 	if err := row.Scan(&pointNum); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return domain.Point{}, fmt.Errorf("no point record found for user_id=%s: %w", userID, err)
+			fmt.Printf("user not found (user_id=%s) \n", userID)
+			return domain.Point{}, err
 		}
 		return domain.Point{}, fmt.Errorf("failed to scan point row: %w (user_id:%s)", err, userID)
 	}
@@ -40,8 +39,20 @@ func (p PointRepository) GetPointByUserID(ctx context.Context, userID string) (d
 
 func (p PointRepository) UpdatePointByUserID(ctx context.Context, point domain.Point) error {
 	var query = `UPDATE point_root SET point_num=? WHERE user_id=?`
-	// TODO: 取得した値を処理する
 	_, err := p.db.Exec(query, point.PointNum, point.UserID)
+	if err != nil {
+		return fmt.Errorf("failed to scan point row: %w (point_num:%d user_id:%s)", err, point.PointNum, point.UserID)
+	}
+	return nil
+}
+
+func (p PointRepository) UpdatePointOrCreateByUserID(ctx context.Context, point domain.Point) error {
+	var query = `
+				INSERT INTO point_root (user_id, point_num) 
+				VALUES(?, ?) 
+				ON DUPLICATE KEY  UPDATE point_num = VALUES(point_num);
+				`
+	_, err := p.db.Exec(query, point.UserID, point.PointNum)
 	if err != nil {
 		return fmt.Errorf("failed to scan point row: %w (point_num:%d user_id:%s)", err, point.PointNum, point.UserID)
 	}
