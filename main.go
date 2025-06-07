@@ -3,11 +3,12 @@ package main
 import (
 	"pointservice/adapter/repository"
 	"pointservice/infra"
+	"pointservice/infra/database"
 	"pointservice/presentation"
 )
 
 func main() {
-	db, closer := infra.ConnectDB()
+	db, closer := database.ConnectDB()
 	defer func() {
 		if err := closer(); err != nil {
 			panic(err)
