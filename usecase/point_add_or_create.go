@@ -45,7 +45,7 @@ func (p pointAddInterceptor) Execute(ctx context.Context, input *PointAddOrCreat
 	}
 	addedPoints, err := domain.NewPoint(currentUserPoint.UserID, currentUserPoint.PointNum+input.PointNum)
 	if err != nil {
-		return fmt.Errorf("new point create filed: %w", err)
+		return fmt.Errorf("new point create failed: %w", err)
 	}
 	return p.repo.UpdatePointOrCreateByUserID(ctx, addedPoints)
 }
