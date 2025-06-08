@@ -36,7 +36,7 @@ func (p pointSubInterceptor) Execute(ctx context.Context, input *PointSubInput) 
 	}
 	subtractedPoints, err := domain.NewPoint(currentUserPoint.UserID, currentUserPoint.PointNum-input.PointNum)
 	if err != nil {
-		return fmt.Errorf("new point create filed: %w", err)
+		return fmt.Errorf("point update failed: %w", err)
 	}
 	return p.repo.UpdatePointByUserID(ctx, subtractedPoints)
 }

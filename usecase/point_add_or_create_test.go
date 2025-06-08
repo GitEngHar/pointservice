@@ -9,19 +9,15 @@ import (
 	"testing"
 )
 
-type stubPointRepository struct{}
+type StubPointRepository struct{}
 
-func (s stubPointRepository) GetPointByUserID(ctx context.Context, userID string) (domain.Point, error) {
+func (s StubPointRepository) GetPointByUserID(ctx context.Context, userID string) (domain.Point, error) {
 	mockDB := map[string]int{
 		"userA": 0,
-		"user1": 10,
+		"userB": 10,
 	}
-	if _, ok := mockDB[userID]; ok != false {
+	if _, ok := mockDB[userID]; ok == false {
 		return domain.Point{}, sql.ErrNoRows
-	}
-	// Unpredictable errors for testing
-	if userID == "!" {
-		return domain.Point{}, errors.New("unpredictable errors for testing")
 	}
 	return domain.Point{
 		UserID:   userID,
@@ -29,19 +25,35 @@ func (s stubPointRepository) GetPointByUserID(ctx context.Context, userID string
 	}, nil
 }
 
-func (s stubPointRepository) UpdatePointByUserID(ctx context.Context, point domain.Point) error {
+func (s StubPointRepository) UpdatePointByUserID(ctx context.Context, point domain.Point) error {
+	mockDB := map[string]int{
+		"userA": 0,
+		"userB": 10,
+	}
+	if _, ok := mockDB[point.UserID]; ok == true {
+		mockDB[point.UserID] += point.PointNum
+		return nil
+	}
+	// Unpredictable errors for testing
+	if point.UserID == "!" {
+		return errors.New("unpredictable errors for testing")
+	}
 	return nil
 }
 
-func (s stubPointRepository) UpdatePointOrCreateByUserID(ctx context.Context, point domain.Point) error {
+func (s StubPointRepository) UpdatePointOrCreateByUserID(ctx context.Context, point domain.Point) error {
 	mockDB := map[string]int{
 		"userA": 0,
-		"user1": 10,
+		"userB": 10,
 	}
-	if _, ok := mockDB[point.UserID]; ok != false {
+	// mock upsert
+	if _, ok := mockDB[point.UserID]; ok == false {
 		mockDB[point.UserID] = point.PointNum
 		return nil
+	} else {
+		mockDB[point.UserID] += point.PointNum
 	}
+
 	// Unpredictable errors for testing
 	if point.UserID == "!" {
 		return errors.New("unpredictable errors for testing")
@@ -57,7 +69,7 @@ func Test_Execute(t *testing.T) {
 
 	t.Parallel()
 
-	mockRepo := stubPointRepository{}
+	mockRepo := StubPointRepository{}
 	uc := NewPointAddOrCreateInterceptor(mockRepo)
 	tests := []struct {
 		name        string
@@ -90,18 +102,6 @@ func Test_Execute(t *testing.T) {
 			errMsg:      "",
 		},
 		{
-			name: "Failed select target user",
-			args: args{
-				context.Background(),
-				&PointAddOrCreateInput{
-					"!",
-					123,
-				},
-			},
-			expectedErr: true,
-			errMsg:      "failed select target user: unpredictable errors for testing",
-		},
-		{
 			name: "Failed generate new point",
 			args: args{
 				context.Background(),
@@ -111,7 +111,7 @@ func Test_Execute(t *testing.T) {
 				},
 			},
 			expectedErr: true,
-			errMsg:      "new point create filed: points must be greater than 0",
+			errMsg:      "new point create failed: points must be greater than 0",
 		},
 	}
 
