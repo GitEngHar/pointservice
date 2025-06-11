@@ -24,7 +24,7 @@ func (p PointRepository) GetPointByUserID(ctx context.Context, userID string) (d
 	var pointNum int
 	if err := row.Scan(&pointNum); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return domain.Point{}, fmt.Errorf("user not found (user_id=%s) \n", userID)
+			return domain.Point{}, sql.ErrNoRows
 		}
 		return domain.Point{}, fmt.Errorf("failed to scan point row: %w (user_id:%s)", err, userID)
 	}

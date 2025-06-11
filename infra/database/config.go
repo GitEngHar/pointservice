@@ -40,6 +40,6 @@ func newConfigMysql() config {
 		maxIdleConnections:    maxIdleConnections,
 		maxRetryConnection:    5,
 		maxOpenConnectionTime: 15 * time.Minute,
-		retryInterval:         3 * time.Second,
+		retryInterval:         5 * time.Second,
 	}
 }
