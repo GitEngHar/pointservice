@@ -27,6 +27,7 @@ func (p *PointHandler) PointAdd(c echo.Context) error {
 	if err := c.Bind(pointDTO); err != nil {
 		return fmt.Errorf("json format bind err: %w", err)
 	}
+	fmt.Println("Request Bind Object")
 	uc := usecase.NewPointAddOrCreateInterceptor(p.repo)
 	if err := uc.Execute(ctx, pointDTO); err != nil {
 		return fmt.Errorf("point add or one user create error: %w", err)

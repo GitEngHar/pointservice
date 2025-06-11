@@ -9,6 +9,7 @@ import (
 )
 
 func ConnectDB() (*sql.DB, func() error) {
+	var connectRetryNum int
 	mysqlConfig := newConfigMysql()
 	connectDBUri := fmt.Sprintf(
 		"%s:%s@tcp(%s:%s)/%s",
@@ -21,24 +22,19 @@ func ConnectDB() (*sql.DB, func() error) {
 	db.SetMaxOpenConns(mysqlConfig.maxOpenConnections)
 	db.SetMaxIdleConns(mysqlConfig.maxIdleConnections)
 	db.SetConnMaxLifetime(mysqlConfig.maxOpenConnectionTime)
-	if err = db.Ping(); err != nil {
-		connectionRetry(err, mysqlConfig)
+	for {
+		time.Sleep(mysqlConfig.retryInterval)
+		err := db.Ping()
+		if err == nil {
+			break
+		}
+		connectRetryNum++
+		if connectRetryNum > mysqlConfig.maxRetryConnection {
+			log.Fatalf("db connection time out (3min): %s", err)
+		}
 	}
 	fmt.Println("db connected!!	")
 	return db, func() error {
 		return db.Close()
-	}
-}
-
-func connectionRetry(err error, mysqlConfig config) {
-	var connectRetryNum int
-	fmt.Println("db connection failed retry start")
-	for err != nil {
-		time.Sleep(mysqlConfig.retryInterval)
-		if connectRetryNum > mysqlConfig.maxRetryConnection {
-			log.Fatalf("db connection time out (3min) %s", err)
-		}
-		connectRetryNum++
-		fmt.Printf("db connection retry...%d \n", connectRetryNum)
 	}
 }
