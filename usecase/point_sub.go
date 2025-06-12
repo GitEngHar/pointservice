@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"pointservice/domain"
+	"time"
 )
 
 type (
@@ -34,7 +35,7 @@ func (p pointSubInterceptor) Execute(ctx context.Context, input *PointSubInput) 
 	if err != nil {
 		return fmt.Errorf("failed select target user: %w", err)
 	}
-	subtractedPoints, err := domain.NewPoint(currentUserPoint.UserID, currentUserPoint.PointNum-input.PointNum)
+	subtractedPoints, err := domain.NewPoint(currentUserPoint.UserID, currentUserPoint.PointNum-input.PointNum, currentUserPoint.CreatedAt, time.Now())
 	if err != nil {
 		return fmt.Errorf("point update failed: %w", err)
 	}

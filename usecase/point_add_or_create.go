@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"pointservice/domain"
+	"time"
 )
 
 type (
@@ -37,13 +38,14 @@ func (p pointAddInterceptor) Execute(ctx context.Context, input *PointAddOrCreat
 		// Sql.ErrNoRows are tolerated as new users are created.
 		if errors.Is(err, sql.ErrNoRows) {
 			// The parameters of the user to be created refer to the input parameters
-			currentUserPoint.UserID = input.UserID
-			currentUserPoint.PointNum = 0
+			if currentUserPoint, err = domain.NewPoint(input.UserID, 0, time.Now(), time.Now()); err != nil {
+				return fmt.Errorf("new point create failed: %w", err)
+			}
 		} else {
 			return fmt.Errorf("failed select target user: %w", err)
 		}
 	}
-	addedPoints, err := domain.NewPoint(currentUserPoint.UserID, currentUserPoint.PointNum+input.PointNum)
+	addedPoints, err := domain.NewPoint(currentUserPoint.UserID, currentUserPoint.PointNum+input.PointNum, currentUserPoint.CreatedAt, time.Now())
 	if err != nil {
 		return fmt.Errorf("new point create failed: %w", err)
 	}

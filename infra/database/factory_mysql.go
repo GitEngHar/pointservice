@@ -12,7 +12,7 @@ func ConnectDB() (*sql.DB, func() error) {
 	var connectRetryNum int
 	mysqlConfig := newConfigMysql()
 	connectDBUri := fmt.Sprintf(
-		"%s:%s@tcp(%s:%s)/%s",
+		"%s:%s@tcp(%s:%s)/%s?parseTime=true",
 		mysqlConfig.user, mysqlConfig.password, mysqlConfig.host, mysqlConfig.port, mysqlConfig.database,
 	)
 	db, err := sql.Open("mysql", connectDBUri)
