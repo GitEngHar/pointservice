@@ -53,3 +53,22 @@ func (p *PointHandler) PointSub(c echo.Context) error {
 	returnMassage := "Success"
 	return c.String(http.StatusOK, returnMassage)
 }
+
+func (p *PointHandler) PointConfirm(c echo.Context) error {
+	fmt.Println("Received PointConfirm Request")
+	ctx := c.Request().Context()
+	pointDTO := new(usecase.PointConfirmInput)
+	if err := c.Bind(pointDTO); err != nil {
+		return err
+	}
+	uc := usecase.NewPointConfirmInterceptor(p.repo)
+	pointAndUserInfo, err := uc.Execute(ctx, pointDTO)
+	if err != nil {
+		fmt.Println(err)
+		return fmt.Errorf("point subtraction error: %w", err)
+	}
+
+	fmt.Println("Success point subtraction")
+	returnMassage := fmt.Sprintf("{userID:%s, point:%d}", pointAndUserInfo.UserID, pointAndUserInfo.PointNum)
+	return c.String(http.StatusOK, returnMassage)
+}
