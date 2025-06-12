@@ -33,9 +33,9 @@ func (p pointConfirmInterceptor) Execute(ctx context.Context, input *PointConfir
 	if err != nil {
 		return domain.Point{}, fmt.Errorf("failed select target user: %w", err)
 	}
-	pointAndUserInfo, err := domain.NewPoint(currentUserPoint.UserID, currentUserPoint.PointNum, currentUserPoint.CreatedAt, currentUserPoint.UpdatedAt)
+	pointInfo, err := domain.NewPoint(currentUserPoint.UserID, currentUserPoint.PointNum, currentUserPoint.CreatedAt, currentUserPoint.UpdatedAt)
 	if err != nil {
 		return domain.Point{}, fmt.Errorf("point confirm failed: %w", err)
 	}
-	return pointAndUserInfo, nil
+	return pointInfo, nil
 }

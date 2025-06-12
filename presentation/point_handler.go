@@ -62,13 +62,13 @@ func (p *PointHandler) PointConfirm(c echo.Context) error {
 		return err
 	}
 	uc := usecase.NewPointConfirmInterceptor(p.repo)
-	pointAndUserInfo, err := uc.Execute(ctx, pointDTO)
+	pointInfo, err := uc.Execute(ctx, pointDTO)
 	if err != nil {
 		fmt.Println(err)
 		return fmt.Errorf("point subtraction error: %w", err)
 	}
 
 	fmt.Println("Success point subtraction")
-	returnMassage := fmt.Sprintf("{userID:%s, point:%d}", pointAndUserInfo.UserID, pointAndUserInfo.PointNum)
+	returnMassage := fmt.Sprintf("{userID:%s, point:%d}", pointInfo.UserID, pointInfo.PointNum)
 	return c.String(http.StatusOK, returnMassage)
 }
