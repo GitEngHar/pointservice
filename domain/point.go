@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"regexp"
+	"time"
 )
 
 type (
@@ -15,8 +16,10 @@ type (
 	}
 
 	Point struct {
-		UserID   string
-		PointNum int
+		UserID    string
+		PointNum  int
+		CreatedAt time.Time
+		UpdatedAt time.Time
 	}
 )
 
@@ -29,7 +32,7 @@ func isCorrectFormatUserID(target string) bool {
 	return re.MatchString(target)
 }
 
-func NewPoint(userID string, pointNum int) (Point, error) {
+func NewPoint(userID string, pointNum int, createdAt time.Time, updatedAt time.Time) (Point, error) {
 	if !isCorrectFormatUserID(userID) {
 		return Point{}, fmt.Errorf("userID is not correct format: %s", userID)
 	}
@@ -37,7 +40,9 @@ func NewPoint(userID string, pointNum int) (Point, error) {
 		return Point{}, ErrPointBelowZero
 	}
 	return Point{
-		UserID:   userID,
-		PointNum: pointNum,
+		UserID:    userID,
+		PointNum:  pointNum,
+		CreatedAt: createdAt,
+		UpdatedAt: updatedAt,
 	}, nil
 }

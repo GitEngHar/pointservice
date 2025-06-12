@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"pointservice/domain"
+	"time"
 )
 
 type PointRepository struct {
@@ -20,16 +21,19 @@ func NewPointSQL(db *sql.DB) PointRepository {
 
 func (p PointRepository) GetPointByUserID(ctx context.Context, userID string) (domain.Point, error) {
 	var query = `SELECT point_num FROM point_root WHERE user_id=?`
-	row := p.db.QueryRowContext(ctx, query, userID)
 	var pointNum int
-	if err := row.Scan(&pointNum); err != nil {
+	var createdAt time.Time
+	var updatedAt time.Time
+
+	row := p.db.QueryRowContext(ctx, query, userID)
+	if err := row.Scan(&pointNum, &createdAt, &updatedAt); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return domain.Point{}, sql.ErrNoRows
 		}
 		return domain.Point{}, fmt.Errorf("failed to scan point row: %w (user_id:%s)", err, userID)
 	}
 
-	point, err := domain.NewPoint(userID, pointNum)
+	point, err := domain.NewPoint(userID, pointNum, createdAt, updatedAt)
 	if err != nil {
 		return domain.Point{}, fmt.Errorf("%w", err)
 	}
@@ -47,13 +51,15 @@ func (p PointRepository) UpdatePointByUserID(ctx context.Context, point domain.P
 
 func (p PointRepository) UpdatePointOrCreateByUserID(ctx context.Context, point domain.Point) error {
 	var query = `
-				INSERT INTO point_root (user_id, point_num) 
-				VALUES(?, ?) 
-				ON DUPLICATE KEY  UPDATE point_num = VALUES(point_num);
+				INSERT INTO point_root (user_id, point_num, created_at, updated_at) 
+				VALUES(?, ?, ?, ?) 
+				ON DUPLICATE KEY  UPDATE 
+				    point_num = VALUES(point_num), 
+					updated_at = VALUES(updated_at);
 				`
-	_, err := p.db.Exec(query, point.UserID, point.PointNum)
+	_, err := p.db.Exec(query, point.UserID, point.PointNum, point.CreatedAt, point.UpdatedAt)
 	if err != nil {
-		return fmt.Errorf("failed to scan point row: %w (point_num:%d user_id:%s)", err, point.PointNum, point.UserID)
+		return fmt.Errorf("failed to scan point row: %w (point_num:%d user_id:%s)", err, point.PointNum, point.UserID, point.CreatedAt, point.UpdatedAt)
 	}
 	return nil
 }
