@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"fmt"
 	"pointservice/domain"
 )
 
@@ -31,11 +30,11 @@ func NewPointConfirmInterceptor(
 func (p pointConfirmInterceptor) Execute(ctx context.Context, input *PointConfirmInput) (domain.Point, error) {
 	currentUserPoint, err := p.repo.GetPointByUserID(ctx, input.UserID)
 	if err != nil {
-		return domain.Point{}, fmt.Errorf("failed select target user: %w", err)
+		return domain.Point{}, err
 	}
 	pointInfo, err := domain.NewPoint(currentUserPoint.UserID, currentUserPoint.PointNum, currentUserPoint.CreatedAt, currentUserPoint.UpdatedAt)
 	if err != nil {
-		return domain.Point{}, fmt.Errorf("point confirm failed: %w", err)
+		return domain.Point{}, err
 	}
 	return pointInfo, nil
 }

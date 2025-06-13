@@ -3,7 +3,6 @@ package domain
 import (
 	"context"
 	"errors"
-	"fmt"
 	"regexp"
 	"time"
 )
@@ -24,7 +23,12 @@ type (
 )
 
 var (
-	ErrPointBelowZero = errors.New("points must be greater than 0")
+	ErrPointBelowZero      = errors.New("points must be greater than 0")
+	ErrInvalidFormatUserID = errors.New("user id is invalid format")
+	ErrUserNotFound        = errors.New("user not found")
+	ErrSelectUserID        = errors.New("failed select user")
+	ErrUpdatePoint         = errors.New("failed point update")
+	ErrCreateOrUpdatePoint = errors.New("failed point create or update")
 )
 
 func isCorrectFormatUserID(target string) bool {
@@ -34,7 +38,7 @@ func isCorrectFormatUserID(target string) bool {
 
 func NewPoint(userID string, pointNum int, createdAt time.Time, updatedAt time.Time) (Point, error) {
 	if !isCorrectFormatUserID(userID) {
-		return Point{}, fmt.Errorf("userID is not correct format: %s", userID)
+		return Point{}, ErrInvalidFormatUserID
 	}
 	if 0 > pointNum {
 		return Point{}, ErrPointBelowZero

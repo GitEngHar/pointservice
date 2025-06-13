@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fmt"
 	"pointservice/domain"
 	"time"
 )
@@ -28,14 +27,14 @@ func (p PointRepository) GetPointByUserID(ctx context.Context, userID string) (d
 	row := p.db.QueryRowContext(ctx, query, userID)
 	if err := row.Scan(&pointNum, &createdAt, &updatedAt); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return domain.Point{}, sql.ErrNoRows
+			return domain.Point{}, domain.ErrUserNotFound
 		}
-		return domain.Point{}, fmt.Errorf("failed to scan point row: %w (user_id:%s)", err, userID)
+		return domain.Point{}, domain.ErrSelectUserID
 	}
 
 	point, err := domain.NewPoint(userID, pointNum, createdAt, updatedAt)
 	if err != nil {
-		return domain.Point{}, fmt.Errorf("%w", err)
+		return domain.Point{}, err
 	}
 	return point, nil
 }
@@ -44,8 +43,7 @@ func (p PointRepository) UpdatePointByUserID(ctx context.Context, point domain.P
 	var query = `UPDATE point_root SET point_num=?, updated_at=? WHERE user_id=?`
 	_, err := p.db.Exec(query, point.PointNum, point.UpdatedAt, point.UserID)
 	if err != nil {
-		return fmt.Errorf("failed to update point: %w (user_id:%s, point_num:%d, created_at:%v, updated_at:%v)",
-			err, point.UserID, point.PointNum, point.CreatedAt, point.UpdatedAt)
+		return domain.ErrUpdatePoint
 	}
 	return nil
 }
@@ -60,8 +58,7 @@ func (p PointRepository) UpdatePointOrCreateByUserID(ctx context.Context, point 
 				`
 	_, err := p.db.Exec(query, point.UserID, point.PointNum, point.CreatedAt, point.UpdatedAt)
 	if err != nil {
-		return fmt.Errorf("failed to insert or update point: %w (user_id:%s, point_num:%d, created_at:%v, updated_at:%v)",
-			err, point.UserID, point.PointNum, point.CreatedAt, point.UpdatedAt)
+		return domain.ErrCreateOrUpdatePoint
 
 	}
 	return nil
