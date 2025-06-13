@@ -21,54 +21,44 @@ func NewPointHandler(db *sql.DB, pointRepository repository.PointRepository) *Po
 }
 
 func (p *PointHandler) PointAdd(c echo.Context) error {
-	fmt.Println("Received PointAdd Request")
 	ctx := c.Request().Context()
 	pointDTO := new(usecase.PointAddOrCreateInput)
 	if err := c.Bind(pointDTO); err != nil {
-		return fmt.Errorf("json format bind err: %w", err)
+		return echo.NewHTTPError(http.StatusBadRequest, "json format bind error: "+err.Error())
 	}
-	fmt.Println("Request Bind Object")
 	uc := usecase.NewPointAddOrCreateInterceptor(p.repo)
 	if err := uc.Execute(ctx, pointDTO); err != nil {
-		return fmt.Errorf("point add or one user create error: %w", err)
+		return echo.NewHTTPError(http.StatusInternalServerError, "point add or one user create error: "+err.Error())
 	}
-	fmt.Println("Success point added")
 	returnMassage := "Success"
 	return c.String(http.StatusOK, returnMassage)
 }
 
 func (p *PointHandler) PointSub(c echo.Context) error {
-	fmt.Println("Received PointSub Request")
 	ctx := c.Request().Context()
 	pointDTO := new(usecase.PointSubInput)
 	if err := c.Bind(pointDTO); err != nil {
-		return err
+		return echo.NewHTTPError(http.StatusBadRequest, "json format bind error: "+err.Error())
 	}
 	uc := usecase.NewPointSubInterceptor(p.repo)
 	if err := uc.Execute(ctx, pointDTO); err != nil {
-		fmt.Println(err)
-		return fmt.Errorf("point subtraction error: %w", err)
+		return echo.NewHTTPError(http.StatusInternalServerError, "point subtraction error: "+err.Error())
 	}
-	fmt.Println("Success point subtraction")
 	returnMassage := "Success"
 	return c.String(http.StatusOK, returnMassage)
 }
 
 func (p *PointHandler) PointConfirm(c echo.Context) error {
-	fmt.Println("Received PointConfirm Request")
 	ctx := c.Request().Context()
 	pointDTO := new(usecase.PointConfirmInput)
 	if err := c.Bind(pointDTO); err != nil {
-		return err
+		return echo.NewHTTPError(http.StatusBadRequest, "json format bind error: "+err.Error())
 	}
 	uc := usecase.NewPointConfirmInterceptor(p.repo)
 	pointInfo, err := uc.Execute(ctx, pointDTO)
 	if err != nil {
-		fmt.Println(err)
-		return fmt.Errorf("point subtraction error: %w", err)
+		return echo.NewHTTPError(http.StatusInternalServerError, "point confirm error: "+err.Error())
 	}
-
-	fmt.Println("Success point subtraction")
 	returnMassage := fmt.Sprintf("{userID:%s, point:%d}", pointInfo.UserID, pointInfo.PointNum)
 	return c.String(http.StatusOK, returnMassage)
 }
