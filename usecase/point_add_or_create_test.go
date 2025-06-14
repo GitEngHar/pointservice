@@ -2,11 +2,15 @@ package usecase
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"pointservice/domain"
 	"testing"
+)
+
+var (
+	ErrForTest = errors.New("unpredictable errors for testing")
 )
 
 type StubPointRepository struct{}
@@ -17,7 +21,7 @@ func (s StubPointRepository) GetPointByUserID(ctx context.Context, userID string
 		"userB": 10,
 	}
 	if _, ok := mockDB[userID]; ok == false {
-		return domain.Point{}, sql.ErrNoRows
+		return domain.Point{}, domain.ErrUserNotFound
 	}
 	return domain.Point{
 		UserID:   userID,
@@ -36,7 +40,7 @@ func (s StubPointRepository) UpdatePointByUserID(ctx context.Context, point doma
 	}
 	// Unpredictable errors for testing
 	if point.UserID == "!" {
-		return errors.New("unpredictable errors for testing")
+		return ErrForTest
 	}
 	return nil
 }
@@ -56,7 +60,7 @@ func (s StubPointRepository) UpdatePointOrCreateByUserID(ctx context.Context, po
 
 	// Unpredictable errors for testing
 	if point.UserID == "!" {
-		return errors.New("unpredictable errors for testing")
+		return ErrForTest
 	}
 	return nil
 }
@@ -72,10 +76,10 @@ func Test_Execute(t *testing.T) {
 	mockRepo := StubPointRepository{}
 	uc := NewPointAddOrCreateInterceptor(mockRepo)
 	tests := []struct {
-		name        string
-		args        args
-		expectedErr bool
-		errMsg      string
+		name              string
+		args              args
+		expectedErr       bool
+		expectedErrorType error
 	}{
 		{
 			name: "Successful point add",
@@ -86,8 +90,8 @@ func Test_Execute(t *testing.T) {
 					123,
 				},
 			},
-			expectedErr: false,
-			errMsg:      "",
+			expectedErr:       false,
+			expectedErrorType: nil,
 		},
 		{
 			name: "Successful point create",
@@ -98,8 +102,8 @@ func Test_Execute(t *testing.T) {
 					123,
 				},
 			},
-			expectedErr: false,
-			errMsg:      "",
+			expectedErr:       false,
+			expectedErrorType: nil,
 		},
 		{
 			name: "Failed generate new point",
@@ -110,18 +114,16 @@ func Test_Execute(t *testing.T) {
 					-1,
 				},
 			},
-			expectedErr: true,
-			errMsg:      "new point create failed: points must be greater than 0",
+			expectedErr:       true,
+			expectedErrorType: domain.ErrPointBelowZero,
 		},
 	}
 
 	for _, ts := range tests {
 		t.Run(ts.name, func(t *testing.T) {
 			err := uc.Execute(ts.args.Context, ts.args.PointAddOrCreateInput)
-			var errMsg string
 			if ts.expectedErr {
-				errMsg = err.Error()
-				if diff := cmp.Diff(ts.errMsg, errMsg); diff != "" {
+				if diff := cmp.Diff(ts.expectedErrorType, err, cmpopts.EquateErrors()); diff != "" {
 					t.Error(diff)
 				}
 			}
