@@ -2,6 +2,7 @@ package domain
 
 import (
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"testing"
 	"time"
 )
@@ -15,10 +16,10 @@ func Test_NewPoint(t *testing.T) {
 		UpdatedAt time.Time
 	}
 	tests := []struct {
-		name     string
-		args     args
-		expected Point
-		errMsg   string
+		name              string
+		args              args
+		expected          Point
+		expectedErrorType error
 	}{
 		{
 			name: "Successful create point struct",
@@ -34,7 +35,7 @@ func Test_NewPoint(t *testing.T) {
 				CreatedAt: time.Date(2025, time.June, 10, 15, 30, 0, 0, time.UTC),
 				UpdatedAt: time.Date(2025, time.June, 10, 15, 30, 0, 0, time.UTC),
 			},
-			errMsg: "",
+			expectedErrorType: nil,
 		},
 		{
 			name: "Failed create point struct",
@@ -44,8 +45,8 @@ func Test_NewPoint(t *testing.T) {
 				CreatedAt: time.Date(2025, time.June, 10, 15, 30, 0, 0, time.UTC),
 				UpdatedAt: time.Date(2025, time.June, 10, 15, 30, 0, 0, time.UTC),
 			},
-			expected: Point{},
-			errMsg:   "userID is not correct format: !abc123d",
+			expected:          Point{},
+			expectedErrorType: ErrInvalidFormatUserID,
 		},
 		{
 			name: "Failed create point struct",
@@ -55,8 +56,8 @@ func Test_NewPoint(t *testing.T) {
 				CreatedAt: time.Date(2025, time.June, 10, 15, 30, 0, 0, time.UTC),
 				UpdatedAt: time.Date(2025, time.June, 10, 15, 30, 0, 0, time.UTC),
 			},
-			expected: Point{},
-			errMsg:   "points must be greater than 0",
+			expected:          Point{},
+			expectedErrorType: ErrPointBelowZero,
 		},
 	}
 
@@ -66,10 +67,8 @@ func Test_NewPoint(t *testing.T) {
 			if diff := cmp.Diff(ts.expected, result); diff != "" {
 				t.Error(diff)
 			}
-			var errMsg string
 			if err != nil {
-				errMsg = err.Error()
-				if diff := cmp.Diff(ts.errMsg, errMsg); diff != "" {
+				if diff := cmp.Diff(ts.expectedErrorType, err, cmpopts.EquateErrors()); diff != "" {
 					t.Error(diff)
 				}
 			}

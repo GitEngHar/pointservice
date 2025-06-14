@@ -3,6 +3,8 @@ package usecase
 import (
 	"context"
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
+	"pointservice/domain"
 	"testing"
 )
 
@@ -18,10 +20,10 @@ func Test_Sub_Execute(t *testing.T) {
 	mockRepo := StubPointRepository{}
 	uc := NewPointSubInterceptor(mockRepo)
 	tests := []struct {
-		name        string
-		args        args
-		expectedErr bool
-		errMsg      string
+		name              string
+		args              args
+		expectedErr       bool
+		expectedErrorType error
 	}{
 		{
 			name: "Successful point sub",
@@ -32,8 +34,8 @@ func Test_Sub_Execute(t *testing.T) {
 					9,
 				},
 			},
-			expectedErr: false,
-			errMsg:      "",
+			expectedErr:       false,
+			expectedErrorType: nil,
 		},
 		{
 			name: "Failed select target user:",
@@ -44,8 +46,8 @@ func Test_Sub_Execute(t *testing.T) {
 					9,
 				},
 			},
-			expectedErr: true,
-			errMsg:      "failed select target user: sql: no rows in result set",
+			expectedErr:       true,
+			expectedErrorType: domain.ErrUserNotFound,
 		},
 		{
 			name: "Failed generate new point",
@@ -56,18 +58,16 @@ func Test_Sub_Execute(t *testing.T) {
 					1,
 				},
 			},
-			expectedErr: true,
-			errMsg:      "point update failed: points must be greater than 0",
+			expectedErr:       true,
+			expectedErrorType: domain.ErrPointBelowZero,
 		},
 	}
 
 	for _, ts := range tests {
 		t.Run(ts.name, func(t *testing.T) {
 			err := uc.Execute(ts.args.Context, ts.args.PointSubInput)
-			var errMsg string
 			if ts.expectedErr {
-				errMsg = err.Error()
-				if diff := cmp.Diff(ts.errMsg, errMsg); diff != "" {
+				if diff := cmp.Diff(ts.expectedErrorType, err, cmpopts.EquateErrors()); diff != "" {
 					t.Error(diff)
 				}
 			}

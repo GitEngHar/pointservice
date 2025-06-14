@@ -15,7 +15,7 @@ func NewRouter(server *echo.Echo) Router {
 	}
 }
 
-func (r *Router) exec(h *presentation.PointHandler) {
+func (r *Router) Exec(h *presentation.PointHandler) {
 	e := r.server
 	e.PUT("/point/add", h.PointAdd)
 	e.PUT("/point/sub", h.PointSub)

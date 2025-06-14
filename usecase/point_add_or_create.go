@@ -2,9 +2,7 @@ package usecase
 
 import (
 	"context"
-	"database/sql"
 	"errors"
-	"fmt"
 	"pointservice/domain"
 	"time"
 )
@@ -36,18 +34,18 @@ func (p pointAddInterceptor) Execute(ctx context.Context, input *PointAddOrCreat
 	currentUserPoint, err := p.repo.GetPointByUserID(ctx, input.UserID)
 	if err != nil {
 		// Sql.ErrNoRows are tolerated as new users are created.
-		if errors.Is(err, sql.ErrNoRows) {
+		if errors.Is(err, domain.ErrUserNotFound) {
 			// The parameters of the user to be created refer to the input parameters
 			if currentUserPoint, err = domain.NewPoint(input.UserID, 0, time.Now(), time.Now()); err != nil {
-				return fmt.Errorf("new point create failed: %w", err)
+				return err
 			}
 		} else {
-			return fmt.Errorf("failed select target user: %w", err)
+			return err
 		}
 	}
 	addedPoints, err := domain.NewPoint(currentUserPoint.UserID, currentUserPoint.PointNum+input.PointNum, currentUserPoint.CreatedAt, time.Now())
 	if err != nil {
-		return fmt.Errorf("new point create failed: %w", err)
+		return err
 	}
 	return p.repo.UpdatePointOrCreateByUserID(ctx, addedPoints)
 }

@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"pointservice/domain"
 	"testing"
 )
@@ -19,11 +20,11 @@ func Test_Confirm_Execute(t *testing.T) {
 	mockRepo := StubPointRepository{}
 	uc := NewPointConfirmInterceptor(mockRepo)
 	tests := []struct {
-		name        string
-		args        args
-		expected    domain.Point
-		expectedErr bool
-		errMsg      string
+		name              string
+		args              args
+		expected          domain.Point
+		expectedErr       bool
+		expectedErrorType error
 	}{
 		{
 			name: "Successful point confirm",
@@ -37,8 +38,8 @@ func Test_Confirm_Execute(t *testing.T) {
 				UserID:   "userA",
 				PointNum: 0,
 			},
-			expectedErr: false,
-			errMsg:      "",
+			expectedErr:       false,
+			expectedErrorType: nil,
 		},
 		{
 			name: "Successful point confirm",
@@ -52,8 +53,8 @@ func Test_Confirm_Execute(t *testing.T) {
 				UserID:   "userB",
 				PointNum: 10,
 			},
-			expectedErr: false,
-			errMsg:      "",
+			expectedErr:       false,
+			expectedErrorType: nil,
 		},
 		{
 			name: "Failed select target user:",
@@ -63,9 +64,9 @@ func Test_Confirm_Execute(t *testing.T) {
 					"userC",
 				},
 			},
-			expected:    domain.Point{},
-			expectedErr: true,
-			errMsg:      "failed select target user: sql: no rows in result set",
+			expected:          domain.Point{},
+			expectedErr:       true,
+			expectedErrorType: domain.ErrUserNotFound,
 		},
 	}
 
@@ -75,10 +76,8 @@ func Test_Confirm_Execute(t *testing.T) {
 			if diff := cmp.Diff(ts.expected, pointInfo); diff != "" {
 				t.Error(diff)
 			}
-			var errMsg string
 			if ts.expectedErr {
-				errMsg = err.Error()
-				if diff := cmp.Diff(ts.errMsg, errMsg); diff != "" {
+				if diff := cmp.Diff(ts.expectedErrorType, err, cmpopts.EquateErrors()); diff != "" {
 					t.Error(diff)
 				}
 			}
