@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"pointservice/adapter/repository"
 	"pointservice/domain"
+	"pointservice/presentation/api"
 	"pointservice/usecase"
 )
 
@@ -32,26 +33,27 @@ func (p *PointHandler) PointAdd(c echo.Context) error {
 	if err := uc.Execute(ctx, pointDTO); err != nil {
 		return handleErr(err)
 	}
-	returnMassage := "Success"
-	return c.String(http.StatusOK, returnMassage)
+	successMessage := api.NewSuccess([]string{"point updated"})
+	return c.JSON(http.StatusOK, successMessage)
 }
 
 func handleErr(err error) error {
+	errMessages := api.NewError(err)
 	switch {
 	case errors.Is(err, domain.ErrPointBelowZero):
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		return echo.NewHTTPError(http.StatusBadRequest, errMessages)
 	case errors.Is(err, domain.ErrInvalidFormatUserID):
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		return echo.NewHTTPError(http.StatusBadRequest, errMessages)
 	case errors.Is(err, domain.ErrUserNotFound):
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		return echo.NewHTTPError(http.StatusBadRequest, errMessages)
 	case errors.Is(err, domain.ErrSelectUserID):
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, errMessages)
 	case errors.Is(err, domain.ErrUpdatePoint):
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, errMessages)
 	case errors.Is(err, domain.ErrCreateOrUpdatePoint):
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, errMessages)
 	default:
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, errMessages)
 	}
 }
 
@@ -65,8 +67,8 @@ func (p *PointHandler) PointSub(c echo.Context) error {
 	if err := uc.Execute(ctx, pointDTO); err != nil {
 		return handleErr(err)
 	}
-	returnMassage := "Success"
-	return c.String(http.StatusOK, returnMassage)
+	successMessage := api.NewSuccess([]string{"point subtracted"})
+	return c.JSON(http.StatusOK, successMessage)
 }
 
 func (p *PointHandler) PointConfirm(c echo.Context) error {
@@ -80,6 +82,9 @@ func (p *PointHandler) PointConfirm(c echo.Context) error {
 	if err != nil {
 		return handleErr(err)
 	}
-	returnMassage := fmt.Sprintf("{userID:%s, point:%d}", pointInfo.UserID, pointInfo.PointNum)
-	return c.String(http.StatusOK, returnMassage)
+	successMessage := api.NewSuccess([]string{
+		fmt.Sprintf("userID: %s", pointInfo.UserID),
+		fmt.Sprintf("pointNum: %d", pointInfo.PointNum),
+	})
+	return c.JSON(http.StatusOK, successMessage)
 }
