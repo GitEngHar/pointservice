@@ -23,6 +23,11 @@ func NewPointHandler(db *sql.DB, pointRepository repository.PointRepository) *Po
 		repo: pointRepository}
 }
 
+func (p *PointHandler) HealthCheck(c echo.Context) error {
+	successMessage := api.NewSuccess([]string{"ok"})
+	return c.JSON(http.StatusOK, successMessage)
+}
+
 func (p *PointHandler) PointAdd(c echo.Context) error {
 	ctx := c.Request().Context()
 	pointDTO := new(usecase.PointAddOrCreateInput)
