@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"pointservice/internal/domain"
 	"time"
 )
@@ -29,7 +30,7 @@ func (p PointRepository) GetPointByUserID(ctx context.Context, userID string) (d
 		if errors.Is(err, sql.ErrNoRows) {
 			return domain.Point{}, domain.ErrUserNotFound
 		}
-		return domain.Point{}, domain.ErrSelectUserID
+		return domain.Point{}, fmt.Errorf("%s: %s", domain.ErrSelectUserID, err.Error())
 	}
 
 	point, err := domain.NewPoint(userID, pointNum, createdAt, updatedAt)
