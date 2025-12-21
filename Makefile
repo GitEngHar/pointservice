@@ -8,10 +8,10 @@ tidy:
 build:
 	docker compose build
 
-up:
+up:build
 	docker compose up
 
 run: up
 
 down:
-	docker compose down
+	docker compose down -v

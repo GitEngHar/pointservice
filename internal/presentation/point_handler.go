@@ -42,26 +42,6 @@ func (p *PointHandler) PointAdd(c echo.Context) error {
 	return c.JSON(http.StatusOK, successMessage)
 }
 
-func handleErr(err error) error {
-	errMessages := api.NewError(err)
-	switch {
-	case errors.Is(err, domain.ErrPointBelowZero):
-		return echo.NewHTTPError(http.StatusBadRequest, errMessages)
-	case errors.Is(err, domain.ErrInvalidFormatUserID):
-		return echo.NewHTTPError(http.StatusBadRequest, errMessages)
-	case errors.Is(err, domain.ErrUserNotFound):
-		return echo.NewHTTPError(http.StatusBadRequest, errMessages)
-	case errors.Is(err, domain.ErrSelectUserID):
-		return echo.NewHTTPError(http.StatusInternalServerError, errMessages)
-	case errors.Is(err, domain.ErrUpdatePoint):
-		return echo.NewHTTPError(http.StatusInternalServerError, errMessages)
-	case errors.Is(err, domain.ErrCreateOrUpdatePoint):
-		return echo.NewHTTPError(http.StatusInternalServerError, errMessages)
-	default:
-		return echo.NewHTTPError(http.StatusInternalServerError, errMessages)
-	}
-}
-
 func (p *PointHandler) PointSub(c echo.Context) error {
 	ctx := c.Request().Context()
 	pointDTO := new(usecase.PointSubInput)
@@ -92,4 +72,24 @@ func (p *PointHandler) PointConfirm(c echo.Context) error {
 		fmt.Sprintf("pointNum: %d", pointInfo.PointNum),
 	})
 	return c.JSON(http.StatusOK, successMessage)
+}
+
+func handleErr(err error) error {
+	errMessages := api.NewError(err)
+	switch {
+	case errors.Is(err, domain.ErrPointBelowZero):
+		return echo.NewHTTPError(http.StatusBadRequest, errMessages)
+	case errors.Is(err, domain.ErrInvalidFormatUserID):
+		return echo.NewHTTPError(http.StatusBadRequest, errMessages)
+	case errors.Is(err, domain.ErrUserNotFound):
+		return echo.NewHTTPError(http.StatusBadRequest, errMessages)
+	case errors.Is(err, domain.ErrSelectUserID):
+		return echo.NewHTTPError(http.StatusInternalServerError, errMessages)
+	case errors.Is(err, domain.ErrUpdatePoint):
+		return echo.NewHTTPError(http.StatusInternalServerError, errMessages)
+	case errors.Is(err, domain.ErrCreateOrUpdatePoint):
+		return echo.NewHTTPError(http.StatusInternalServerError, errMessages)
+	default:
+		return echo.NewHTTPError(http.StatusInternalServerError, errMessages)
+	}
 }
