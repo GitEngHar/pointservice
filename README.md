@@ -1,10 +1,6 @@
 # Hi There 👋 !!
 
-## What is Point
-TBD
-
-## UseCase
-TBD
-
-## How to use
-TBD
+## run point service
+```bash
+make run
+```
