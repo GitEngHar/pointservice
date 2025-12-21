@@ -1,14 +1,14 @@
 package main
 
 import (
-	"pointservice/adapter/repository"
-	"pointservice/infra"
-	"pointservice/infra/database"
-	"pointservice/presentation"
+	"pointservice/internal/adapter/repository"
+	"pointservice/internal/infra"
+	"pointservice/internal/infra/database/mysql"
+	"pointservice/internal/presentation"
 )
 
 func main() {
-	db, closer := database.ConnectDB()
+	db, closer := mysql.ConnectDB()
 	defer func() {
 		if err := closer(); err != nil {
 			panic(err)

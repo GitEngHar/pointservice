@@ -1,11 +1,11 @@
 package infra
 
 import (
-	"pointservice/adapter/repository"
-	"pointservice/infra/log"
-	"pointservice/presentation"
+	"github.com/labstack/echo/v4"
+	"pointservice/internal/adapter/repository"
+	"pointservice/internal/infra/log"
+	"pointservice/internal/presentation"
 )
-import "github.com/labstack/echo/v4"
 
 type Config struct {
 	appName string

@@ -3,7 +3,7 @@ package usecase
 import (
 	"context"
 	"errors"
-	"pointservice/domain"
+	"pointservice/internal/domain"
 	"time"
 )
 

@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"pointservice/domain"
+	"pointservice/internal/domain"
 	"time"
 )
 

@@ -1,0 +1,53 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pointservice
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      POINT_MYSQL_HOST: mysql
+      POINT_MYSQL_DATABASE: appdb
+      POINT_MYSQL_PORT: "3306"
+      POINT_MYSQL_USER: appuser
+      POINT_MYSQL_PASSWORD: apppass
+      POINT_MYSQL_MAX_OPEN_CONNECTIONS: "2"
+      POINT_MYSQL_MAX_IDLE_CONNECTIONS: "1"
+    ports:
+      - "8080:1323"
+    networks:
+      - pointservice-network
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: appdb
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: apppass
+      TZ: Asia/Tokyo
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - pointservice-network
+
+volumes:
+  mysql-data:
+
+networks:
+  pointservice-network:
+    driver: bridge

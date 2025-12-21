@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"github.com/labstack/echo/v4"
 	"net/http"
-	"pointservice/adapter/repository"
-	"pointservice/domain"
-	"pointservice/presentation/api"
-	"pointservice/usecase"
+	"pointservice/internal/adapter/repository"
+	"pointservice/internal/domain"
+	"pointservice/internal/presentation/api"
+	"pointservice/internal/usecase"
 )
 
 type PointHandler struct {

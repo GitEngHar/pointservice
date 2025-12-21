@@ -2,7 +2,7 @@ package infra
 
 import (
 	"github.com/labstack/echo/v4"
-	"pointservice/presentation"
+	"pointservice/internal/presentation"
 )
 
 type Router struct {

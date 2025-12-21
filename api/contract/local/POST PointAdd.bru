@@ -1,0 +1,27 @@
+meta {
+  name: POST PointAdd
+  type: http
+  seq: 4
+}
+
+put {
+  url: http://localhost:8080/point/add
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "user_id":"test-user",
+    "point_num":100
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

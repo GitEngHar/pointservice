@@ -5,7 +5,7 @@ import (
 	"errors"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
-	"pointservice/domain"
+	"pointservice/internal/domain"
 	"testing"
 )
 
