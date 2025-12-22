@@ -2,7 +2,7 @@
 
 ## requests
 This project using rest api request tool called bruno  
-Bruno project File: `api/contract`
+Bruno project directory: `api/contract`
 
 ## point service
 
