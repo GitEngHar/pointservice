@@ -23,7 +23,7 @@ jobs:
       - name: Go mod tidy
         run: make tidy
       - name: Build image
-        run: docker compose build -t point-service:1.0
+        run: docker build . -t point-service:1.0
       - name: Start MySQL
         run: docker compose -f docker-compose.mysql.yml up -d
       # Keploy Test 実行
