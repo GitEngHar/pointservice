@@ -48,7 +48,7 @@ jobs:
                 -e POINT_MYSQL_PASSWORD=apppass \
                 point-service:1.0" \
             --delay 8 \
-            --buildDelay 50s \
+            --buildDelay 50 \
             --path .
       # 後片付け
       - name: Cleanup
