@@ -47,7 +47,7 @@ jobs:
                 -e POINT_MYSQL_USER=appuser \
                 -e POINT_MYSQL_PASSWORD=apppass \
                 point-service:1.0" \
-            --delay 8s \
+            --delay 8 \
             --buildDelay 50s \
             --path .
       # 後片付け
