@@ -22,11 +22,9 @@ jobs:
       # Go の依存整理（任意だが安全）
       - name: Go mod tidy
         run: make tidy
+      - name: Test run
+        run: make run
       # Keploy Test 実行
-      # ⚠️ Keploy の exit code バグ対策で || true を付ける
-      - name: Run Keploy Tests
-        run: |
-          make ci-keploy || true
       - name: Test-Report
         uses: keploy/testgpt@main
         with:
