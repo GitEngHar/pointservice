@@ -26,7 +26,12 @@ jobs:
         run: docker build . -t point-service:1.0
       - name: Start MySQL
         run: docker compose -f docker-compose.mysql.yml up -d
-      # Keploy Test 実行
+      - name: Install Keploy
+        run: |
+          curl --silent --location \
+            https://github.com/keploy/keploy/releases/latest/download/keploy_linux_amd64.tar.gz \
+            | tar xz -C $HOME/.local/bin
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
       - name: Keploy Test
         run: |
           sudo -E keploy test \
