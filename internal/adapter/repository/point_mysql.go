@@ -20,10 +20,12 @@ func NewPointSQL(db *sql.DB) PointRepository {
 }
 
 func (p PointRepository) GetPointByUserID(ctx context.Context, userID string) (domain.Point, error) {
-	var query = `SELECT point_num,created_at,updated_at FROM point_root WHERE user_id=?`
-	var pointNum int
-	var createdAt time.Time
-	var updatedAt time.Time
+	var (
+		query     = `SELECT point_num,created_at,updated_at FROM point_root WHERE user_id=?`
+		pointNum  int
+		createdAt time.Time
+		updatedAt time.Time
+	)
 
 	row := p.db.QueryRowContext(ctx, query, userID)
 	if err := row.Scan(&pointNum, &createdAt, &updatedAt); err != nil {
