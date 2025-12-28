@@ -35,7 +35,7 @@ jobs:
           sudo mv /tmp/keploy /usr/local/bin/keploy
           sudo chmod +x /usr/local/bin/keploy
           
-          keploy version
+          keploy --version
       - name: Keploy Test
         run: |
           sudo -E keploy test \
