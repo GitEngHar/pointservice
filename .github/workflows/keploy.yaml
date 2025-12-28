@@ -22,8 +22,6 @@ jobs:
       # Go の依存整理（任意だが安全）
       - name: Go mod tidy
         run: make tidy
-      - name: Test run
-        run: make run
       # Keploy Test 実行
       - name: Test-Report
         uses: keploy/testgpt@main
