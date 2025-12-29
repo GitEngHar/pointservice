@@ -16,38 +16,38 @@ spec:
       Content-Length: "28"
       Content-Type: application/json
       Host: localhost:1323
-      Request-Start-Time: "1766414968251"
+      Request-Start-Time: "1767019494516"
       User-Agent: bruno-runtime/2.15.1
     body: |-
       {
         "user_id":"testuser01"
       }
-    timestamp: 2025-12-22T14:49:28.254171963Z
+    timestamp: 2025-12-29T14:44:54.520693482Z
   resp:
     status_code: 400
     header:
       Content-Length: "30"
       Content-Type: application/json
-      Date: Mon, 22 Dec 2025 14:49:28 GMT
+      Date: Mon, 29 Dec 2025 14:44:54 GMT
     body: |
       {"errors":["user not found"]}
     status_message: Bad Request
     proto_major: 0
     proto_minor: 0
-    timestamp: 2025-12-22T14:49:30.289955881Z
+    timestamp: 2025-12-29T14:44:56.621853303Z
   objects: []
   assertions:
     noise:
       header.Date: []
-  created: 1766414970
+  created: 1767019496
 curl: |-
   curl --request GET \
     --url http://localhost:1323/point/confirm \
+    --header 'Host: localhost:1323' \
     --header 'Connection: keep-alive' \
     --header 'Accept: application/json, text/plain, */*' \
     --header 'Content-Type: application/json' \
     --header 'User-Agent: bruno-runtime/2.15.1' \
-    --header 'Request-Start-Time: 1766414968251' \
+    --header 'Request-Start-Time: 1767019494516' \
     --header 'Accept-Encoding: gzip, compress, deflate, br' \
-    --header 'Host: localhost:1323' \
     --data "{\n  \"user_id\":\"testuser01\"\n}"

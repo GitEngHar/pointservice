@@ -30,5 +30,5 @@ func (c *Config) Start(h *presentation.PointHandler) {
 	e := c.server
 	c.router.Exec(h)
 	c.log.Exec()
-	e.Logger.Fatal(e.Start("127.0.0.1:1323"))
+	e.Logger.Fatal(e.Start(":1323"))
 }
