@@ -20,7 +20,7 @@ spec:
             character_set: 45
             filler: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
             username: appuser
-            auth_response: [108, 47, 88, 193, 176, 8, 102, 165, 143, 67, 201, 247, 222, 30, 100, 98, 133, 187, 49, 145, 58, 202, 94, 143, 119, 241, 191, 89, 210, 7, 228, 97]
+            auth_response: [129, 91, 171, 22, 120, 46, 186, 213, 85, 175, 52, 95, 220, 84, 245, 78, 59, 217, 88, 157, 40, 54, 126, 126, 197, 207, 47, 251, 178, 132, 24, 97]
             database: ppdb
             auth_plugin_name: caching_sha2_password
             connection_attributes:
@@ -30,6 +30,18 @@ spec:
                 _platform: arm64
                 _server_host: mysql
             zstdcompressionlevel: 0
+        - header:
+            header:
+                payload_length: 1
+                sequence_id: 3
+            packet_type: RequestPublicKey
+          message: request_public_key
+        - header:
+            header:
+                payload_length: 256
+                sequence_id: 5
+            packet_type: encrypted_password
+          message: Vn5nPzXYczfxUJ6Sg+xfjRdSxmSN0aXAvXM+MZE42znH5ysq20MaDxr4jDy0duM+bV0tX3bcfZLRirZZj2EwXIRB0YxuwoNsOGmECHHhxBeJQx1UXaMNGA1IsisUq53j59zGuO31op9rivCCveql4QIs58a3VQyTU3Rs8eUmdeDmIgE/MR5Wch7CfP/HwfK8jiDtBP2Rj0v93Ths8P0zbKOupN8gnTtXb0VJIqMCEQIciScPAjWolwRiJIlHybI43RctjRsACFnGstEJj251gNV5DWOHrrqH8W5QVH54T/Bye/g0V3NP6umn6nmmKhytyPMZJosF1yDmkPbuFixpOA==
     responses:
         - header:
             header:
@@ -39,8 +51,8 @@ spec:
           message:
             protocol_version: 10
             server_version: 8.0.44
-            connection_id: 653
-            auth_plugin_data: [56, 50, 35, 91, 118, 38, 120, 100, 118, 123, 101, 9, 66, 112, 28, 74, 42, 45, 93, 49, 0]
+            connection_id: 8
+            auth_plugin_data: [58, 88, 83, 108, 125, 73, 67, 59, 25, 112, 50, 10, 59, 14, 56, 76, 12, 95, 9, 56, 0]
             filler: 0
             capability_flags: 3758096383
             character_set: 255
@@ -53,11 +65,30 @@ spec:
             packet_type: AuthMoreData
           message:
             status_tag: 1
-            data: FastAuthSuccess
+            data: PerformFullAuthentication
+        - header:
+            header:
+                payload_length: 452
+                sequence_id: 4
+            packet_type: AuthMoreData
+          meta:
+            auth operation: public key response
+          message:
+            status_tag: 1
+            data: |
+                -----BEGIN PUBLIC KEY-----
+                MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2GmO5V3Bo0GTTrXMD0P1
+                ao3hnB8LYLMhAuGgk15VWRDDg0iMwOQBHbVkpTSnin9VliqMfnca/wNPKL2Xbh7H
+                LxAqQB2K7pTwYZblZ6MbFOak5u/7YzwoGAXGWn4uy0xPBSJW9Jjj3bwpX4XRmg68
+                5pEEUER00PHTgBaRdC5rjrQx2+1unV2hHj+BcCako2B3gDfJGd2JtGWPWzvho0Vf
+                +vkRiDkBI9R2lFD4O/HctFqAra1pZLoqdEEiVtz3Y0UVsQ6aGn9ahLX73Gs3tjtC
+                1MCTdBsvfP2g3WnARmWdobIGUGfuXxnagrC+OzV3GSADSa3XATN50HMi6L5MaKK3
+                QwIDAQAB
+                -----END PUBLIC KEY-----
         - header:
             header:
                 payload_length: 7
-                sequence_id: 3
+                sequence_id: 6
             packet_type: OK
           message:
             header: 0
@@ -66,9 +97,9 @@ spec:
             status_flags: 2
             warnings: 0
             info: ""
-    created: 1767019475
-    reqtimestampmock: 2025-12-29T14:44:35.764955001Z
-    restimestampmock: 2025-12-29T14:44:35.765638959Z
+    created: 1767022480
+    reqtimestampmock: 2025-12-29T15:34:40.571579795Z
+    restimestampmock: 2025-12-29T15:34:40.578067378Z
 ---
 version: api.keploy.io/v1beta1
 kind: MySQL
@@ -100,9 +131,9 @@ spec:
             status_flags: 2
             warnings: 0
             info: ""
-    created: 1767019475
-    reqtimestampmock: 2025-12-29T14:44:35.766233959Z
-    restimestampmock: 2025-12-29T14:44:35.766638501Z
+    created: 1767022480
+    reqtimestampmock: 2025-12-29T15:34:40.578314461Z
+    restimestampmock: 2025-12-29T15:34:40.578493586Z
 ---
 version: api.keploy.io/v1beta1
 kind: MySQL
@@ -236,9 +267,9 @@ spec:
                 - 0
                 - 2
                 - 0
-    created: 1767019494
-    reqtimestampmock: 2025-12-29T14:44:54.521705968Z
-    restimestampmock: 2025-12-29T14:44:54.540690885Z
+    created: 1767022579
+    reqtimestampmock: 2025-12-29T15:36:19.470698424Z
+    restimestampmock: 2025-12-29T15:36:19.484016924Z
 ---
 version: api.keploy.io/v1beta1
 kind: MySQL
@@ -357,9 +388,9 @@ spec:
                     - 2
                     - 0
                 type: EOF
-    created: 1767019494
-    reqtimestampmock: 2025-12-29T14:44:54.541300593Z
-    restimestampmock: 2025-12-29T14:44:54.543102635Z
+    created: 1767022579
+    reqtimestampmock: 2025-12-29T15:36:19.484483174Z
+    restimestampmock: 2025-12-29T15:36:19.485266507Z
 ---
 version: api.keploy.io/v1beta1
 kind: MySQL
@@ -380,9 +411,9 @@ spec:
             status: 25
             statement_id: 1
     responses: []
-    created: 1767019494
-    reqtimestampmock: 2025-12-29T14:44:54.543254385Z
-    restimestampmock: 2025-12-29T14:44:54.543260427Z
+    created: 1767022579
+    reqtimestampmock: 2025-12-29T15:36:19.485664257Z
+    restimestampmock: 2025-12-29T15:36:19.485670924Z
 ---
 version: api.keploy.io/v1beta1
 kind: MySQL
@@ -516,9 +547,9 @@ spec:
                 - 0
                 - 2
                 - 0
-    created: 1767019510
-    reqtimestampmock: 2025-12-29T14:45:10.641701378Z
-    restimestampmock: 2025-12-29T14:45:10.642780962Z
+    created: 1767022585
+    reqtimestampmock: 2025-12-29T15:36:25.164752177Z
+    restimestampmock: 2025-12-29T15:36:25.16524901Z
 ---
 version: api.keploy.io/v1beta1
 kind: MySQL
@@ -637,9 +668,9 @@ spec:
                     - 2
                     - 0
                 type: EOF
-    created: 1767019510
-    reqtimestampmock: 2025-12-29T14:45:10.643032295Z
-    restimestampmock: 2025-12-29T14:45:10.643884753Z
+    created: 1767022585
+    reqtimestampmock: 2025-12-29T15:36:25.165488677Z
+    restimestampmock: 2025-12-29T15:36:25.166201385Z
 ---
 version: api.keploy.io/v1beta1
 kind: MySQL
@@ -660,9 +691,9 @@ spec:
             status: 25
             statement_id: 2
     responses: []
-    created: 1767019510
-    reqtimestampmock: 2025-12-29T14:45:10.644050087Z
-    restimestampmock: 2025-12-29T14:45:10.644059045Z
+    created: 1767022585
+    reqtimestampmock: 2025-12-29T15:36:25.166353218Z
+    restimestampmock: 2025-12-29T15:36:25.166362718Z
 ---
 version: api.keploy.io/v1beta1
 kind: MySQL
@@ -787,9 +818,9 @@ spec:
                 - 0
             column_definitions: []
             eofAfterColumnDefs: []
-    created: 1767019510
-    reqtimestampmock: 2025-12-29T14:45:10.644220795Z
-    restimestampmock: 2025-12-29T14:45:10.644970503Z
+    created: 1767022585
+    reqtimestampmock: 2025-12-29T15:36:25.166781677Z
+    restimestampmock: 2025-12-29T15:36:25.167610427Z
 ---
 version: api.keploy.io/v1beta1
 kind: MySQL
@@ -824,10 +855,10 @@ spec:
                   value: 100
                 - type: 254
                   unsigned: false
-                  value: "2025-12-29 14:45:10.643957712"
+                  value: "2025-12-29 15:36:25.166270427"
                 - type: 254
                   unsigned: false
-                  value: "2025-12-29 14:45:10.644027795"
+                  value: "2025-12-29 15:36:25.166586468"
     responses:
         - header:
             header:
@@ -841,9 +872,9 @@ spec:
             status_flags: 2
             warnings: 0
             info: ""
-    created: 1767019510
-    reqtimestampmock: 2025-12-29T14:45:10.645101212Z
-    restimestampmock: 2025-12-29T14:45:10.650446712Z
+    created: 1767022585
+    reqtimestampmock: 2025-12-29T15:36:25.16786251Z
+    restimestampmock: 2025-12-29T15:36:25.172117635Z
 ---
 version: api.keploy.io/v1beta1
 kind: MySQL
@@ -864,9 +895,9 @@ spec:
             status: 25
             statement_id: 3
     responses: []
-    created: 1767019510
-    reqtimestampmock: 2025-12-29T14:45:10.651106128Z
-    restimestampmock: 2025-12-29T14:45:10.651121003Z
+    created: 1767022585
+    reqtimestampmock: 2025-12-29T15:36:25.172593052Z
+    restimestampmock: 2025-12-29T15:36:25.172610968Z
 ---
 version: api.keploy.io/v1beta1
 kind: MySQL
@@ -1000,9 +1031,9 @@ spec:
                 - 0
                 - 2
                 - 0
-    created: 1767019514
-    reqtimestampmock: 2025-12-29T14:45:14.055734172Z
-    restimestampmock: 2025-12-29T14:45:14.056735963Z
+    created: 1767022591
+    reqtimestampmock: 2025-12-29T15:36:31.722712346Z
+    restimestampmock: 2025-12-29T15:36:31.723884346Z
 ---
 version: api.keploy.io/v1beta1
 kind: MySQL
@@ -1119,11 +1150,11 @@ spec:
                       unsigned: false
                     - type: 7
                       name: created_at
-                      value: "2025-12-29 14:45:11"
+                      value: "2025-12-29 15:36:25"
                       unsigned: false
                     - type: 7
                       name: updated_at
-                      value: "2025-12-29 14:45:11"
+                      value: "2025-12-29 15:36:25"
                       unsigned: false
                   okAfterRow: true
                   rowNullBuffer:
@@ -1140,9 +1171,9 @@ spec:
                     - 2
                     - 0
                 type: EOF
-    created: 1767019514
-    reqtimestampmock: 2025-12-29T14:45:14.057014797Z
-    restimestampmock: 2025-12-29T14:45:14.057868797Z
+    created: 1767022591
+    reqtimestampmock: 2025-12-29T15:36:31.72412593Z
+    restimestampmock: 2025-12-29T15:36:31.724832305Z
 ---
 version: api.keploy.io/v1beta1
 kind: MySQL
@@ -1163,6 +1194,6 @@ spec:
             status: 25
             statement_id: 4
     responses: []
-    created: 1767019514
-    reqtimestampmock: 2025-12-29T14:45:14.058071088Z
-    restimestampmock: 2025-12-29T14:45:14.05808113Z
+    created: 1767022591
+    reqtimestampmock: 2025-12-29T15:36:31.724950263Z
+    restimestampmock: 2025-12-29T15:36:31.724958055Z
