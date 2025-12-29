@@ -40,6 +40,7 @@ jobs:
         run: |
           sudo -E keploy test \
             -c "docker run --rm \
+                --name point-app \
                 --network pointservice_keploy-network \
                 -e POINT_MYSQL_HOST=mysql \
                 -e POINT_MYSQL_DATABASE=appdb \
