@@ -49,6 +49,7 @@ jobs:
                 -e POINT_MYSQL_PASSWORD=apppass \
                 -e POINT_MYSQL_MAX_OPEN_CONNECTIONS=2 \
                 -e POINT_MYSQL_MAX_IDLE_CONNECTIONS=1 \
+                -e LISTEN_ADDR=127.0.0.1:1323 \
                 point-service:1.0" \
             --delay 8 \
             --buildDelay 50 \
