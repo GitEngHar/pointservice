@@ -8,46 +8,46 @@ spec:
     method: GET
     proto_major: 1
     proto_minor: 1
-    url: http://localhost:1323/point/confirm
+    url: http://127.0.0.1:1323/point/confirm
     header:
       Accept: application/json, text/plain, */*
       Accept-Encoding: gzip, compress, deflate, br
       Connection: keep-alive
       Content-Length: "28"
       Content-Type: application/json
-      Host: localhost:1323
-      Request-Start-Time: "1766414979805"
+      Host: 127.0.0.1:1323
+      Request-Start-Time: "1767022591717"
       User-Agent: bruno-runtime/2.15.1
     body: |-
       {
         "user_id":"testuser01"
       }
-    timestamp: 2025-12-22T14:49:39.809224343Z
+    timestamp: 2025-12-29T15:36:31.722415221Z
   resp:
     status_code: 200
     header:
       Content-Length: "52"
       Content-Type: application/json
-      Date: Mon, 22 Dec 2025 14:49:39 GMT
+      Date: Mon, 29 Dec 2025 15:36:31 GMT
     body: |
       {"messages":["userID: testuser01","pointNum: 100"]}
     status_message: OK
     proto_major: 0
     proto_minor: 0
-    timestamp: 2025-12-22T14:49:41.887535428Z
+    timestamp: 2025-12-29T15:36:33.796988Z
   objects: []
   assertions:
     noise:
       header.Date: []
-  created: 1766414981
+  created: 1767022593
 curl: |-
   curl --request GET \
-    --url http://localhost:1323/point/confirm \
-    --header 'Host: localhost:1323' \
+    --url http://127.0.0.1:1323/point/confirm \
+    --header 'User-Agent: bruno-runtime/2.15.1' \
+    --header 'Request-Start-Time: 1767022591717' \
+    --header 'Accept-Encoding: gzip, compress, deflate, br' \
+    --header 'Host: 127.0.0.1:1323' \
     --header 'Connection: keep-alive' \
     --header 'Accept: application/json, text/plain, */*' \
     --header 'Content-Type: application/json' \
-    --header 'User-Agent: bruno-runtime/2.15.1' \
-    --header 'Request-Start-Time: 1766414979805' \
-    --header 'Accept-Encoding: gzip, compress, deflate, br' \
     --data "{\n  \"user_id\":\"testuser01\"\n}"

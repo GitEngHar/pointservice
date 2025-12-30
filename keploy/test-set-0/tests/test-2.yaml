@@ -8,47 +8,47 @@ spec:
     method: PUT
     proto_major: 1
     proto_minor: 1
-    url: http://localhost:1323/point/add
+    url: http://127.0.0.1:1323/point/add
     header:
       Accept: application/json, text/plain, */*
       Accept-Encoding: gzip, compress, deflate, br
       Connection: keep-alive
       Content-Length: "47"
       Content-Type: application/json
-      Host: localhost:1323
-      Request-Start-Time: "1766414974353"
+      Host: 127.0.0.1:1323
+      Request-Start-Time: "1767022585161"
       User-Agent: bruno-runtime/2.15.1
     body: |-
       {
         "user_id":"testuser01",
         "point_num":100
       }
-    timestamp: 2025-12-22T14:49:34.355732424Z
+    timestamp: 2025-12-29T15:36:25.164628801Z
   resp:
     status_code: 200
     header:
       Content-Length: "31"
       Content-Type: application/json
-      Date: Mon, 22 Dec 2025 14:49:34 GMT
+      Date: Mon, 29 Dec 2025 15:36:25 GMT
     body: |
       {"messages":["point updated"]}
     status_message: OK
     proto_major: 0
     proto_minor: 0
-    timestamp: 2025-12-22T14:49:36.385662509Z
+    timestamp: 2025-12-29T15:36:27.194188553Z
   objects: []
   assertions:
     noise:
       header.Date: []
-  created: 1766414976
+  created: 1767022587
 curl: |-
   curl --request PUT \
-    --url http://localhost:1323/point/add \
-    --header 'Request-Start-Time: 1766414974353' \
+    --url http://127.0.0.1:1323/point/add \
+    --header 'User-Agent: bruno-runtime/2.15.1' \
+    --header 'Request-Start-Time: 1767022585161' \
     --header 'Accept-Encoding: gzip, compress, deflate, br' \
-    --header 'Host: localhost:1323' \
+    --header 'Host: 127.0.0.1:1323' \
     --header 'Connection: keep-alive' \
     --header 'Accept: application/json, text/plain, */*' \
     --header 'Content-Type: application/json' \
-    --header 'User-Agent: bruno-runtime/2.15.1' \
     --data "{\n  \"user_id\":\"testuser01\",\n  \"point_num\":100\n}"
