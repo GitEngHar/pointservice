@@ -6,6 +6,7 @@ require (
 	github.com/go-sql-driver/mysql v1.9.2
 	github.com/google/go-cmp v0.7.0
 	github.com/labstack/echo/v4 v4.13.4
+	github.com/rabbitmq/amqp091-go v1.10.0
 )
 
 require (

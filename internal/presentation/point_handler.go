@@ -6,21 +6,25 @@ import (
 	"fmt"
 	"github.com/labstack/echo/v4"
 	"net/http"
-	"pointservice/internal/adapter/repository"
 	"pointservice/internal/domain"
+	"pointservice/internal/infra/repository"
 	"pointservice/internal/presentation/api"
 	"pointservice/internal/usecase"
+	"pointservice/internal/usecase/tally"
 )
 
 type PointHandler struct {
-	db   *sql.DB
-	repo repository.PointRepository
+	db       *sql.DB
+	repo     repository.PointRepository
+	producer tally.Producer
 }
 
-func NewPointHandler(db *sql.DB, pointRepository repository.PointRepository) *PointHandler {
+func NewPointHandler(db *sql.DB, pointRepository repository.PointRepository, producer tally.Producer) *PointHandler {
 	return &PointHandler{
-		db:   db,
-		repo: pointRepository}
+		db:       db,
+		repo:     pointRepository,
+		producer: producer,
+	}
 }
 
 func (p *PointHandler) HealthCheck(c echo.Context) error {
@@ -34,7 +38,7 @@ func (p *PointHandler) PointAdd(c echo.Context) error {
 	if err := c.Bind(pointDTO); err != nil {
 		return handleErr(err)
 	}
-	uc := usecase.NewPointAddOrCreateInterceptor(p.repo)
+	uc := usecase.NewPointAddOrCreateInterceptor(p.repo, p.producer)
 	if err := uc.Execute(ctx, pointDTO); err != nil {
 		return handleErr(err)
 	}

@@ -15,10 +15,10 @@ type (
 	}
 
 	Point struct {
-		UserID    string
-		PointNum  int
-		CreatedAt time.Time
-		UpdatedAt time.Time
+		UserID    string    `json:"user_id"`
+		PointNum  int       `json:"point_num"`
+		CreatedAt time.Time `json:"created_at"`
+		UpdatedAt time.Time `json:"updated_at"`
 	}
 )
 

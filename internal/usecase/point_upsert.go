@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"pointservice/internal/domain"
+	"pointservice/internal/usecase/tally"
 	"time"
 )
 
@@ -18,15 +19,18 @@ type (
 	}
 
 	pointAddInterceptor struct {
-		repo domain.PointRepository
+		repo     domain.PointRepository
+		producer tally.Producer
 	}
 )
 
 func NewPointAddOrCreateInterceptor(
 	repo domain.PointRepository,
+	producer tally.Producer,
 ) PointAddOrCreateUseCase {
 	return pointAddInterceptor{
-		repo: repo,
+		repo:     repo,
+		producer: producer,
 	}
 }
 
@@ -45,6 +49,10 @@ func (p pointAddInterceptor) Execute(ctx context.Context, input *PointAddOrCreat
 	}
 	addedPoints, err := domain.NewPoint(currentUserPoint.UserID, currentUserPoint.PointNum+input.PointNum, currentUserPoint.CreatedAt, time.Now())
 	if err != nil {
+		return err
+	}
+	addPoint, err := domain.NewPoint(input.UserID, input.PointNum, time.Now(), time.Now())
+	if err = p.producer.PublishPoint(ctx, addPoint); err != nil {
 		return err
 	}
 	return p.repo.UpdatePointOrCreateByUserID(ctx, addedPoints)

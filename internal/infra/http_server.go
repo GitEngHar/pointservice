@@ -2,8 +2,8 @@ package infra
 
 import (
 	"github.com/labstack/echo/v4"
-	"pointservice/internal/adapter/repository"
 	"pointservice/internal/infra/log"
+	"pointservice/internal/infra/repository"
 	"pointservice/internal/presentation"
 )
 

@@ -1,9 +1,10 @@
 package main
 
 import (
-	"pointservice/internal/adapter/repository"
 	"pointservice/internal/infra"
+	"pointservice/internal/infra/aync/mq"
 	"pointservice/internal/infra/database/mysql"
+	"pointservice/internal/infra/repository"
 	"pointservice/internal/presentation"
 )
 
@@ -15,7 +16,8 @@ func main() {
 		}
 	}()
 	repo := repository.NewPointSQL(db)
-	handler := presentation.NewPointHandler(db, repo)
+	tallyProducer := mq.NewRabbitProducer()
+	handler := presentation.NewPointHandler(db, repo, tallyProducer)
 
 	var app = infra.NewConfig().
 		WebServer()
