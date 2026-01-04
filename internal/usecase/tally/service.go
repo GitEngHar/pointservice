@@ -10,5 +10,5 @@ type Producer interface {
 }
 
 type Consumer interface {
-	GetSumPointSpecifyDate(ctx context.Context) error
+	GetSumPoint(ctx context.Context) error
 }

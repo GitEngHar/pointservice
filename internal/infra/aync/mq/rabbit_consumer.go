@@ -7,6 +7,10 @@ import (
 	"pointservice/internal/usecase/tally"
 )
 
+const (
+	externalUri = "amqp://guest:guest@127.0.0.1:5672/"
+)
+
 // Rabbit MessageQueueの非同期通信
 type RabbitConsumer struct {
 }
@@ -14,8 +18,9 @@ type RabbitConsumer struct {
 func NewRabbitConsumer() tally.Consumer {
 	return &RabbitConsumer{}
 }
-func (r *RabbitConsumer) GetSumPointSpecifyDate(c context.Context) error {
-	conn, err := amqp.Dial(uri)
+
+func (r *RabbitConsumer) GetSumPoint(_ context.Context) error {
+	conn, err := amqp.Dial(externalUri)
 	if err != nil {
 		return err
 	}

@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	uri = "amqp://guest:guest@rabbitmq:5672/"
+	internalUri = "amqp://guest:guest@rabbitmq:5672/"
 )
 
 // Rabbit MessageQueueの非同期通信
@@ -21,7 +21,7 @@ func NewRabbitProducer() tally.Producer {
 }
 
 func (r *RabbitProducer) PublishPoint(c context.Context, point domain.Point) error {
-	conn, err := amqp.Dial(uri)
+	conn, err := amqp.Dial(internalUri)
 	if err != nil {
 		return err
 	}
