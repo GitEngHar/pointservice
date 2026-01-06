@@ -1,0 +1,27 @@
+asyncapi: '2.6.0'
+info:
+  title: Order Service
+  version: '1.0.0'
+
+servers:
+  rabbitmq:
+    url: amqp://localhost:5672
+    protocol: amqp
+
+channels:
+  order.created:
+    publish:
+      summary: 注文が作成された
+      message:
+        payload:
+          $ref: '#/components/schemas/OrderCreated'
+
+components:
+  schemas:
+    OrderCreated:
+      type: object
+      properties:
+        orderId:
+          type: string
+        amount:
+          type: number
