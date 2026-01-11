@@ -4,7 +4,7 @@ services:
   app:
     build:
       context: .
-      target: final
+      target: debug
       dockerfile: Dockerfile
     container_name: pointservice
     depends_on:
@@ -20,6 +20,7 @@ services:
       POINT_MYSQL_MAX_IDLE_CONNECTIONS: "1"
     ports:
       - "1323:1323"
+      - "2345:2345"
     networks:
       - pointservice-network
 

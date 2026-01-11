@@ -1,24 +1,38 @@
 ## Base Image Go
-FROM golang:1.23 AS builder
+FROM golang:1.25.5 AS base
 
 WORKDIR /app
 
 COPY go.mod go.sum ./
+RUN go mod download
 
 COPY . .
 
-#RUN GOOS=linux GOARCH=amd64 go build -o server .
-RUN go build -o main .
+## 本番用のバイナリ
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
+    go build -o main .
 
-# 軽量な実行環境
-FROM golang:1.23 AS final
+## for debug
+FROM golang:1.25.5 AS debug
 
-#RUN apk --no-cache add ca-certificates
+WORKDIR /app
 
-COPY --from=builder /app /app
+RUN go install github.com/go-delve/delve/cmd/dlv@latest
 
-RUN chmod 777 /app/main
+COPY . .
 
 EXPOSE 1323
+EXPOSE 2345
 
+CMD ["dlv","debug","--headless","--listen=:2345","--api-version=2","--accept-multiclient","/app/main.go"]
+
+FROM golang:1.25.5 AS final
+
+
+COPY --from=base /app/main /app/main
+
+#RUN chmod 777 /app/main
+
+
+EXPOSE 1323
 CMD ["/app/main"]
