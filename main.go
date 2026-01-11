@@ -16,7 +16,14 @@ func main() {
 		}
 	}()
 	repo := repository.NewPointSQL(db)
-	tallyProducer := mq.NewRabbitProducer()
+	producer, closer := mq.ConnectProducer()
+	defer func() {
+		if closer == nil {
+			return
+		}
+		_ = closer()
+	}()
+	tallyProducer := mq.NewRabbitProducer(producer)
 	handler := presentation.NewPointHandler(db, repo, tallyProducer)
 
 	var app = infra.NewConfig().
