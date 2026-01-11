@@ -22,9 +22,9 @@ jobs:
       - name: Go mod tidy
         run: make tidy
       - name: Build image
-        run: docker build . -t point-service:1.0
-      - name: Start MySQL
-        run: docker compose -f docker-compose.mysql.yml up -d
+        run: docker build --target final -t point-service:1.0 .
+      - name: Start MiddleWare
+        run: docker compose -f docker-compose.middleware.yml up -d
       - name: Install Keploy
         run: |
           curl --silent --location \
