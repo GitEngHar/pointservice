@@ -1,6 +1,6 @@
 asyncapi: '2.6.0'
 info:
-  title: Order Service
+  title: Point Add Service
   version: '1.0.0'
 
 servers:
@@ -9,19 +9,27 @@ servers:
     protocol: amqp
 
 channels:
-  order.created:
+  point.add:
     publish:
-      summary: 注文が作成された
+      summary: ポイントが追加された
       message:
         payload:
-          $ref: '#/components/schemas/OrderCreated'
-
+          $ref: '#/components/schemas/PointAdd'
+    subscribe:
+      summary: 追加されたポイントを取得する
+      message:
+        payload:
+          $ref: '#/components/schemas/PointAdd'
 components:
   schemas:
-    OrderCreated:
+    PointAdd:
       type: object
       properties:
-        orderId:
+        userID:
           type: string
-        amount:
+        pointNum:
           type: number
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
