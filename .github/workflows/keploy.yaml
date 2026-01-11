@@ -37,7 +37,7 @@ jobs:
           keploy --version
       - name: Keploy Test
         run: |
-          sudo -E keploy test \
+          keploy test \
             -c "docker run --rm \
                 -p 1323:1323 \
                 --name point-app \
