@@ -56,4 +56,4 @@ jobs:
       # 後片付け
       - name: Cleanup
         if: always()
-        run: make down
+        run: make down || true
