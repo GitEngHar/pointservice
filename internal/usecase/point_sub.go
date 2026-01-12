@@ -31,12 +31,17 @@ func NewPointSubInterceptor(
 
 func (p pointSubInterceptor) Execute(ctx context.Context, input *PointSubInput) error {
 	currentUserPoint, err := p.repo.GetPointByUserID(ctx, input.UserID)
+	now := time.Now()
 	if err != nil {
 		return err
 	}
-	subtractedPoints, err := domain.NewPoint(currentUserPoint.UserID, currentUserPoint.PointNum-input.PointNum, currentUserPoint.CreatedAt, time.Now())
+	updatePoint, err := domain.NewPoint(
+		currentUserPoint.UserID,
+		currentUserPoint.PointNum-input.PointNum,
+		currentUserPoint.CreatedAt,
+		now)
 	if err != nil {
 		return err
 	}
-	return p.repo.UpdatePointByUserID(ctx, subtractedPoints)
+	return p.repo.UpdatePointByUserID(ctx, updatePoint)
 }

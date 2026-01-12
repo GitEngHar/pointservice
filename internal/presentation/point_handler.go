@@ -34,11 +34,11 @@ func (p *PointHandler) HealthCheck(c echo.Context) error {
 
 func (p *PointHandler) PointAdd(c echo.Context) error {
 	ctx := c.Request().Context()
-	pointDTO := new(usecase.PointAddOrCreateInput)
+	pointDTO := new(usecase.PointUpsertInput)
 	if err := c.Bind(pointDTO); err != nil {
 		return handleErr(err)
 	}
-	uc := usecase.NewPointAddOrCreateInterceptor(p.repo, p.producer)
+	uc := usecase.NewPointUpsertInterceptor(p.repo, p.producer)
 	if err := uc.Execute(ctx, pointDTO); err != nil {
 		return handleErr(err)
 	}
