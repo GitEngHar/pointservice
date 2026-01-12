@@ -63,8 +63,11 @@ const (
 	retryCount    = 3
 )
 
-func ConnectProducer() (*amqp.Connection, func() error) {
+func ConnectProducer(env string) (*amqp.Connection, func() error) {
 	var retry int
+	if env == "keploy" {
+		return nil, nil
+	}
 	for {
 		conn, err := amqp.Dial(internalUri)
 		if err == nil {
@@ -74,7 +77,7 @@ func ConnectProducer() (*amqp.Connection, func() error) {
 		fmt.Printf("failed to connect to rabbitmq!!! error %v. retry %v\n", err.Error(), retry+1)
 		time.Sleep(retryInterval)
 		if retry >= retryCount {
-			return nil, nil
+			panic(err)
 		}
 		retry++
 	}
