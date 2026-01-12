@@ -14,7 +14,7 @@ run-debug:
 	docker compose up --build
 
 run:
-	docker compose -f docker-compose.yml up --build
+	docker compose -f docker-compose.yaml up --build
 
 run-middleware:
 	docker compose -f docker-compose.middleware.yml up -d

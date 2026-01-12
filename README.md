@@ -13,7 +13,12 @@ make run
 
 ### down
 ```bash
-make run
+make down
+```
+
+### debug
+```bash
+make run-debug
 ```
 
 ## for keploy
