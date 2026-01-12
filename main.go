@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"pointservice/internal/infra"
 	"pointservice/internal/infra/aync/mq"
 	"pointservice/internal/infra/database/mysql"
@@ -11,17 +12,15 @@ import (
 func main() {
 	db, closer := mysql.ConnectDB()
 	defer func() {
-		if err := closer(); err != nil {
-			panic(err)
-		}
+		_ = closer()
 	}()
 	repo := repository.NewPointSQL(db)
-	producer, closer := mq.ConnectProducer()
+	environment := os.Getenv("ENVIRONMENT")
+	producer, closer := mq.ConnectProducer(environment)
 	defer func() {
-		if closer == nil {
-			return
+		if closer != nil {
+			_ = closer()
 		}
-		_ = closer()
 	}()
 	tallyProducer := mq.NewRabbitProducer(producer)
 	handler := presentation.NewPointHandler(db, repo, tallyProducer)
