@@ -8,12 +8,14 @@ import (
 	"time"
 )
 
+const InitialPointValue = 0
+
 type (
-	PointAddOrCreateUseCase interface {
-		Execute(context.Context, *PointAddOrCreateInput) error
+	PointUpsertUseCase interface {
+		Execute(context.Context, *PointUpsertInput) error
 	}
 
-	PointAddOrCreateInput struct {
+	PointUpsertInput struct {
 		UserID   string `json:"user_id"`
 		PointNum int    `json:"point_num"`
 	}
@@ -24,36 +26,39 @@ type (
 	}
 )
 
-func NewPointAddOrCreateInterceptor(
+func NewPointUpsertInterceptor(
 	repo domain.PointRepository,
 	producer tally.Producer,
-) PointAddOrCreateUseCase {
+) PointUpsertUseCase {
 	return pointAddInterceptor{
 		repo:     repo,
 		producer: producer,
 	}
 }
 
-func (p pointAddInterceptor) Execute(ctx context.Context, input *PointAddOrCreateInput) error {
+func (p pointAddInterceptor) Execute(ctx context.Context, input *PointUpsertInput) error {
 	currentUserPoint, err := p.repo.GetPointByUserID(ctx, input.UserID)
-	if err != nil {
-		// Sql.ErrNoRows are tolerated as new users are created.
-		if errors.Is(err, domain.ErrUserNotFound) {
-			// The parameters of the user to be created refer to the input parameters
-			if currentUserPoint, err = domain.NewPoint(input.UserID, 0, time.Now(), time.Now()); err != nil {
-				return err
-			}
-		} else {
+	if err != nil && !errors.Is(err, domain.ErrUserNotFound) {
+		return err
+	}
+	now := time.Now()
+	if errors.Is(err, domain.ErrUserNotFound) {
+		if currentUserPoint, err = domain.NewPoint(input.UserID, InitialPointValue, now, now); err != nil {
 			return err
 		}
 	}
-	addedPoints, err := domain.NewPoint(currentUserPoint.UserID, currentUserPoint.PointNum+input.PointNum, currentUserPoint.CreatedAt, time.Now())
+
+	updatePoint, err := domain.NewPoint(
+		currentUserPoint.UserID,
+		currentUserPoint.PointNum+input.PointNum,
+		currentUserPoint.CreatedAt,
+		now)
 	if err != nil {
 		return err
 	}
-	addPoint, err := domain.NewPoint(input.UserID, input.PointNum, time.Now(), time.Now())
-	if err = p.producer.PublishPoint(ctx, addPoint); err != nil {
+	event, err := domain.NewPoint(input.UserID, input.PointNum, now, now)
+	if err = p.producer.PublishPoint(ctx, event); err != nil {
 		return err
 	}
-	return p.repo.UpdatePointOrCreateByUserID(ctx, addedPoints)
+	return p.repo.UpdatePointOrCreateByUserID(ctx, updatePoint)
 }
