@@ -1,0 +1,27 @@
+meta {
+  name: POST PointSub
+  type: http
+  seq: 5
+}
+
+put {
+  url: http://127.0.0.1:1323/point/sub
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "user_id":"testuser01",
+    "point_num":100
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
