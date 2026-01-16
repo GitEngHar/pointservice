@@ -4,26 +4,29 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"github.com/labstack/echo/v4"
 	"net/http"
 	"pointservice/internal/domain"
 	"pointservice/internal/infra/repository"
 	"pointservice/internal/presentation/api"
 	"pointservice/internal/usecase"
 	"pointservice/internal/usecase/tally"
+
+	"github.com/labstack/echo/v4"
 )
 
 type PointHandler struct {
-	db       *sql.DB
-	repo     repository.PointRepository
-	producer tally.Producer
+	db              *sql.DB
+	repo            repository.PointRepository
+	reservationRepo repository.ReservationRepository
+	producer        tally.Producer
 }
 
-func NewPointHandler(db *sql.DB, pointRepository repository.PointRepository, producer tally.Producer) *PointHandler {
+func NewPointHandler(db *sql.DB, pointRepository repository.PointRepository, reservationRepository repository.ReservationRepository, producer tally.Producer) *PointHandler {
 	return &PointHandler{
-		db:       db,
-		repo:     pointRepository,
-		producer: producer,
+		db:              db,
+		repo:            pointRepository,
+		reservationRepo: reservationRepository,
+		producer:        producer,
 	}
 }
 
@@ -76,6 +79,21 @@ func (p *PointHandler) PointConfirm(c echo.Context) error {
 		fmt.Sprintf("pointNum: %d", pointInfo.PointNum),
 	})
 	return c.JSON(http.StatusOK, successMessage)
+}
+
+// ポイント予約（仮押さえ）を受け付ける窓口となる関数。
+func (p *PointHandler) PointReserve(c echo.Context) error {
+	ctx := c.Request().Context()
+	reservationDTO := new(usecase.ReservationCreateInput) // 予約情報を入れるための「空っぽの箱（構造体）」を作っている。
+	if err := c.Bind(reservationDTO); err != nil {
+		return handleErr(err)
+	}
+	uc := usecase.NewReservationCreateInterceptor(p.reservationRepo) // 実際に「予約を作成する仕事」を担当する人（Interceptor）を呼び出して準備している。
+	result, err := uc.Execute(ctx, reservationDTO)
+	if err != nil {
+		return handleErr(err)
+	}
+	return c.JSON(http.StatusCreated, result)
 }
 
 func handleErr(err error) error {

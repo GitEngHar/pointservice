@@ -15,6 +15,7 @@ func main() {
 		_ = closer()
 	}()
 	repo := repository.NewPointSQL(db)
+	reservationRepo := repository.NewReservationSQL(db)
 	environment := os.Getenv("ENVIRONMENT")
 	producer, closer := mq.ConnectProducer(environment)
 	defer func() {
@@ -23,7 +24,7 @@ func main() {
 		}
 	}()
 	tallyProducer := mq.NewRabbitProducer(producer)
-	handler := presentation.NewPointHandler(db, repo, tallyProducer)
+	handler := presentation.NewPointHandler(db, repo, reservationRepo, tallyProducer)
 
 	var app = infra.NewConfig().
 		WebServer()
