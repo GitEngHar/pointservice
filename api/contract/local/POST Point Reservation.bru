@@ -1,0 +1,28 @@
+meta {
+  name: POST Point Reservation
+  type: http
+  seq: 4
+}
+
+post {
+  url: http://127.0.0.1:1323/point/reserve
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "user_id":"testUser1",
+      "point_amount": 100,
+      "execute_at": "2026-01-17T13:50:00+09:00"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

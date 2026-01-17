@@ -1,0 +1,46 @@
+FROM point-service-base:1.0 AS base
+## debug for scheduler
+FROM golang:1.25.5 AS scheduler-debug
+
+WORKDIR /app
+
+RUN go install github.com/go-delve/delve/cmd/dlv@latest
+
+COPY . .
+
+EXPOSE 1324
+EXPOSE 2346
+
+CMD ["dlv","debug","--headless","--listen=:2345","--api-version=2","--accept-multiclient","/app/scheduler/main.go"]
+
+## debug for worker
+FROM golang:1.25.5 AS worker-debug
+
+WORKDIR /app
+
+RUN go install github.com/go-delve/delve/cmd/dlv@latest
+
+COPY . .
+
+EXPOSE 1325
+EXPOSE 2346
+
+CMD ["dlv","debug","--headless","--listen=:2345","--api-version=2","--accept-multiclient","/app/worker/main.go"]
+
+
+## scheduler
+FROM golang:1.25.5 AS scheduler-final
+
+COPY --from=base '/app/scheduler-main' '/app/scheduler-main'
+
+EXPOSE 1324
+CMD ["/app/scheduler-main"]
+
+
+## worker
+FROM golang:1.25.5 AS worker-final
+
+COPY --from=base '/app/worker-main' '/app/worker-main'
+
+EXPOSE 1325
+CMD ["/app/worker-main"]

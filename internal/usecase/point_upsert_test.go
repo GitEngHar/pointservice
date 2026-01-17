@@ -3,10 +3,11 @@ package usecase
 import (
 	"context"
 	"errors"
-	"github.com/google/go-cmp/cmp"
-	"github.com/google/go-cmp/cmp/cmpopts"
 	"pointservice/internal/domain"
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 )
 
 var (
@@ -65,16 +66,23 @@ func (s StubPointRepository) UpdatePointOrCreateByUserID(ctx context.Context, po
 	return nil
 }
 
+type StubProducer struct{}
+
+func (s StubProducer) PublishPoint(ctx context.Context, point domain.Point) error {
+	return nil
+}
+
 func Test_Execute(t *testing.T) {
 	type args struct {
 		context.Context
-		*PointAddOrCreateInput
+		*PointUpsertInput
 	}
 
 	t.Parallel()
 
 	mockRepo := StubPointRepository{}
-	uc := NewPointAddOrCreateInterceptor(mockRepo)
+	mockProducer := StubProducer{}
+	uc := NewPointUpsertInterceptor(mockRepo, mockProducer)
 	tests := []struct {
 		name              string
 		args              args
@@ -85,7 +93,7 @@ func Test_Execute(t *testing.T) {
 			name: "Successful point add",
 			args: args{
 				context.Background(),
-				&PointAddOrCreateInput{
+				&PointUpsertInput{
 					"userA",
 					123,
 				},
@@ -97,7 +105,7 @@ func Test_Execute(t *testing.T) {
 			name: "Successful point create",
 			args: args{
 				context.Background(),
-				&PointAddOrCreateInput{
+				&PointUpsertInput{
 					"123test",
 					123,
 				},
@@ -109,7 +117,7 @@ func Test_Execute(t *testing.T) {
 			name: "Failed generate new point",
 			args: args{
 				context.Background(),
-				&PointAddOrCreateInput{
+				&PointUpsertInput{
 					"123test",
 					-1,
 				},
@@ -121,7 +129,7 @@ func Test_Execute(t *testing.T) {
 
 	for _, ts := range tests {
 		t.Run(ts.name, func(t *testing.T) {
-			err := uc.Execute(ts.args.Context, ts.args.PointAddOrCreateInput)
+			err := uc.Execute(ts.args.Context, ts.args.PointUpsertInput)
 			if ts.expectedErr {
 				if diff := cmp.Diff(ts.expectedErrorType, err, cmpopts.EquateErrors()); diff != "" {
 					t.Error(diff)

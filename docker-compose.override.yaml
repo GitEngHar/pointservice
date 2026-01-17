@@ -5,7 +5,7 @@ services:
     build:
       context: .
       target: debug
-      dockerfile: Dockerfile
+      dockerfile: DockerfileBase
     container_name: pointservice
     depends_on:
       mysql:

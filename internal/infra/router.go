@@ -1,8 +1,9 @@
 package infra
 
 import (
-	"github.com/labstack/echo/v4"
 	"pointservice/internal/presentation"
+
+	"github.com/labstack/echo/v4"
 )
 
 type Router struct {
@@ -20,6 +21,7 @@ func (r *Router) Exec(h *presentation.PointHandler) {
 	e.PUT("/point/add", h.PointAdd)
 	e.PUT("/point/sub", h.PointSub)
 	e.GET("/point/confirm", h.PointConfirm)
+	e.POST("/point/reserve", h.PointReserve)
 	e.GET("/", h.HealthCheck)
 	e.GET("/health", h.HealthCheck)
 	e.GET("/health/", h.HealthCheck)

@@ -1,0 +1,25 @@
+FROM point-service-base:1.0 AS base
+## for debug
+FROM golang:1.25.5 AS debug
+
+WORKDIR /app
+
+RUN go install github.com/go-delve/delve/cmd/dlv@latest
+
+COPY . .
+
+EXPOSE 1323
+EXPOSE 2345
+
+CMD ["dlv","debug","--headless","--listen=:2345","--api-version=2","--accept-multiclient","/app/cmd/main.go"]
+
+FROM golang:1.25.5 AS final
+
+
+COPY --from=base '/app/main' '/app/main'
+
+#RUN chmod 777 /app/main
+
+
+EXPOSE 1323
+CMD ["/app/main"]

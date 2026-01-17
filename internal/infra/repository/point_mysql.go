@@ -66,3 +66,43 @@ func (p PointRepository) UpdatePointOrCreateByUserID(ctx context.Context, point 
 	}
 	return nil
 }
+
+// AddPointIdempotent adds points to a user idempotently.
+// Returns (true, nil) if points were added, (false, nil) if already processed, or (false, error) on failure.
+func (p PointRepository) AddPointIdempotent(ctx context.Context, idempotencyKey string, userID string, pointAmount int) (bool, error) {
+	now := time.Now()
+	txID := idempotencyKey // Use idempotency key as transaction ID for simplicity
+
+	// Try to insert the transaction record first (idempotency check)
+	insertTxQuery := `
+		INSERT IGNORE INTO point_transactions (id, idempotency_key, user_id, point_amount, created_at)
+		VALUES (?, ?, ?, ?, ?)`
+	result, err := p.db.ExecContext(ctx, insertTxQuery, txID, idempotencyKey, userID, pointAmount, now)
+	if err != nil {
+		return false, fmt.Errorf("failed to insert transaction record: %w", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return false, fmt.Errorf("failed to get rows affected: %w", err)
+	}
+
+	// If no rows were inserted, the transaction was already processed
+	if rowsAffected == 0 {
+		return false, nil
+	}
+
+	// Update point_root with the new point amount
+	upsertQuery := `
+		INSERT INTO point_root (user_id, point_num, created_at, updated_at) 
+		VALUES (?, ?, ?, ?)
+		ON DUPLICATE KEY UPDATE 
+			point_num = point_num + VALUES(point_num),
+			updated_at = VALUES(updated_at)`
+	_, err = p.db.ExecContext(ctx, upsertQuery, userID, pointAmount, now, now)
+	if err != nil {
+		return false, fmt.Errorf("failed to update point: %w", err)
+	}
+
+	return true, nil
+}

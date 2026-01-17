@@ -2,13 +2,14 @@ package mq
 
 import (
 	"context"
-	amqp "github.com/rabbitmq/amqp091-go"
 	"log"
 	"pointservice/internal/usecase/tally"
+
+	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 const (
-	externalUri = "amqp://guest:guest@127.0.0.1:5672/"
+	externalUri = "amqp://guest:guest@rabbitmq:5672/"
 )
 
 // Rabbit MessageQueueの非同期通信

@@ -4,10 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	amqp "github.com/rabbitmq/amqp091-go"
 	"pointservice/internal/domain"
 	"pointservice/internal/usecase/tally"
 	"time"
+
+	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 const (
@@ -45,6 +46,50 @@ func (r *RabbitProducer) PublishPoint(c context.Context, point domain.Point) err
 	if err != nil {
 		return err
 	}
+	return ch.PublishWithContext(
+		c,
+		"",
+		queue.Name,
+		false,
+		false,
+		amqp.Publishing{
+			ContentType: "application/json",
+			Body:        body,
+		},
+	)
+}
+
+// ReservationMessage is the message format for reservation queue
+type ReservationMessage struct {
+	ReservationID  string `json:"reservation_id"`
+	UserID         string `json:"user_id"`
+	PointAmount    int    `json:"point_amount"`
+	IdempotencyKey string `json:"idempotency_key"`
+}
+
+const reservationQueueName = "reservationQueue"
+
+// 実際に予約メッセージをRabbitMQに「送信（Publish）」する関数。
+func (r *RabbitProducer) PublishReservation(c context.Context, msg ReservationMessage) error {
+	if r.producer == nil {
+		return nil
+	}
+	ch, err := r.producer.Channel()
+	if err != nil {
+		return err
+	}
+	defer ch.Close()
+
+	queue, err := buildQueue(ch, reservationQueueName) // 送り先となる「キュー（ポスト）」を用意する。
+	if err != nil {
+		return err
+	}
+	body, err := json.Marshal(msg)
+	if err != nil {
+		return err
+	}
+
+	// メッセージを「キュー」に投げる。
 	return ch.PublishWithContext(
 		c,
 		"",
