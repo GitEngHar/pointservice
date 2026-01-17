@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	internalUri = "amqp://guest:guest@127.0.0.1:5672/"
+	internalUri = "amqp://guest:guest@rabbitmq:5672/"
 )
 
 // Rabbit MessageQueueの非同期通信

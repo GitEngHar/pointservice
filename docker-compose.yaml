@@ -5,24 +5,50 @@ services:
     build:
       context: .
       target: final
-      dockerfile: Dockerfile
+      dockerfile: DockerfileApp
+    pull_policy: never
     container_name: pointservice
     depends_on:
       mysql:
         condition: service_healthy
-    environment:
-      POINT_MYSQL_HOST: mysql
-      POINT_MYSQL_DATABASE: appdb
-      POINT_MYSQL_PORT: "3306"
-      POINT_MYSQL_USER: appuser
-      POINT_MYSQL_PASSWORD: apppass
-      POINT_MYSQL_MAX_OPEN_CONNECTIONS: "2"
-      POINT_MYSQL_MAX_IDLE_CONNECTIONS: "1"
+    env_file:
+      - env/.env
     ports:
       - "1323:1323"
     networks:
       - pointservice-network
-
+  scheduler:
+    build:
+      context: .
+      target: scheduler-final
+      dockerfile: DockerfileBatch
+    pull_policy: never
+    container_name: pointscheduler
+    depends_on:
+      mysql:
+        condition: service_healthy
+    env_file:
+      - env/.env
+    ports:
+      - "1324:1324"
+    networks:
+      - pointservice-network
+  worker:
+    build:
+      context: .
+      target: worker-final
+      dockerfile: DockerfileBatch
+    pull_policy: never
+    container_name: pointworker
+    depends_on:
+      mysql:
+        condition: service_healthy
+    env_file:
+      - env/.env
+    ports:
+      - "1325:1325"
+    networks:
+      - pointservice-network
   mysql:
     image: mysql:8.0
     container_name: mysql
