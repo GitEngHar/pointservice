@@ -6,81 +6,75 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"pointservice/internal/infra/aync/dto"
+	"pointservice/internal/infra/aync/mq"
+	"pointservice/internal/usecase"
 	"syscall"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 
 	"pointservice/internal/domain"
-	"pointservice/internal/infra/aync/mq"
 	"pointservice/internal/infra/database/mysql"
 	"pointservice/internal/infra/repository"
 )
 
 const (
 	reservationQueueName = "reservationQueue"
-	rabbitURI            = "amqp://guest:guest@rabbitmq:5672/"
 )
 
 func main() {
+
+	// TODO infra層へ
 	log.Println("Starting point grant worker...")
 
-	// Connect to DB
-	db, dbCloser := mysql.ConnectDB()
-	defer func() {
-		_ = dbCloser()
-	}()
+	db, closeDB := mysql.ConnectDB()
+	defer closeDB()
 
-	// Connect to RabbitMQ
-	conn, err := amqp.Dial(rabbitURI)
-	if err != nil {
-		log.Fatalf("Failed to connect to RabbitMQ: %v", err)
+	environment := os.Getenv("ENVIRONMENT")
+	if environment == "" {
+		environment = "dev"
 	}
-	defer conn.Close()
+	conn := mq.NewConnection(true, environment)
+	defer conn.Conn.Close()
+	defer conn.Ch.Close()
 
-	ch, err := conn.Channel()
-	if err != nil {
-		log.Fatalf("Failed to open channel: %v", err)
-	}
-	defer ch.Close()
-
-	// Declare queue
-	queue, err := ch.QueueDeclare( // キュー（ポスト）が存在するか確認、なければ作る。
-		reservationQueueName,
-		true,  // durable
-		false, // delete when unused
-		false, // exclusive
-		false, // no-wait
-		nil,   // arguments
-	)
-	if err != nil {
-		log.Fatalf("Failed to declare queue: %v", err)
-	}
-
-	msgs, err := ch.Consume( // このキューから予約メッセージを受け取る。
-		queue.Name,
-		"",    // consumer tag
-		false, // auto-ack (manual ack for reliability)
-		false, // exclusive
-		false, // no-local
-		false, // no-wait
-		nil,   // arguments
-	)
-	if err != nil {
-		log.Fatalf("Failed to register consumer: %v", err)
-	}
+	//TODO Infra Consumer
+	//queue, err := ch.QueueDeclare( // キュー（ポスト）が存在するか確認、なければ作る。
+	//	reservationQueueName,
+	//	true,  // durable
+	//	false, // delete when unused
+	//	false, // exclusive
+	//	false, // no-wait
+	//	nil,   // arguments
+	//)
+	//if err != nil {
+	//	log.Fatalf("Failed to declare queue: %v", err)
+	//}
+	//
+	//msgs, err := ch.Consume( // このキューから予約メッセージを受け取る。
+	//	queue.Name,
+	//	"",    // consumer tag
+	//	false, // auto-ack (manual ack for reliability)
+	//	false, // exclusive
+	//	false, // no-local
+	//	false, // no-wait
+	//	nil,   // arguments
+	//)
+	//if err != nil {
+	//	log.Fatalf("Failed to register consumer: %v", err)
+	//}
+	//TODO Learn
+	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer stop()
 
 	pointRepo := repository.NewPointSQL(db)
 	reservationRepo := repository.NewReservationSQL(db)
 
-	// Setup graceful shutdown
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	sigCh := make(chan os.Signal, 1)
-	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
+	usecase.NewPointUpsertInterceptor()
 
 	log.Println("Worker waiting for messages...")
 
+	// TODO infra層へ
 	go func() {
 		for msg := range msgs {
 			if err := processMessage(ctx, msg, pointRepo, reservationRepo); err != nil {
@@ -103,6 +97,7 @@ func main() {
 	log.Printf("Received signal %v, shutting down...", sig)
 }
 
+// TODO useCaseとhandler
 // 予約メッセージを処理する
 func processMessage(
 	ctx context.Context,
@@ -110,7 +105,7 @@ func processMessage(
 	pointRepo repository.PointRepository,
 	reservationRepo repository.ReservationRepository,
 ) error {
-	var reservation mq.ReservationMessage
+	var reservation dto.ReservationMessage
 	if err := json.Unmarshal(msg.Body, &reservation); err != nil {
 		log.Printf("Failed to unmarshal message: %v", err)
 		return err

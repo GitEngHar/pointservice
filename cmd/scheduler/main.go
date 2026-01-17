@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"pointservice/internal/infra/aync/dto"
 	"syscall"
 	"time"
 
@@ -29,15 +30,14 @@ func main() {
 
 	// Connect to RabbitMQ
 	environment := os.Getenv("ENVIRONMENT")
-	conn, mqCloser := mq.ConnectProducer(environment)
-	defer func() {
-		if mqCloser != nil {
-			_ = mqCloser()
-		}
-	}()
+	if environment == "" {
+		environment = "dev"
+	}
+	conn := mq.NewConnection(false, environment)
+	defer conn.Conn.Close()
 
 	reservationRepo := repository.NewReservationSQL(db)
-	producer := mq.NewRabbitProducer(conn).(*mq.RabbitProducer)
+	producer := mq.NewRabbitProducer(conn.Conn)
 
 	// Setup graceful shutdown
 	ctx, cancel := context.WithCancel(context.Background())
@@ -89,7 +89,7 @@ func scanAndPublish(ctx context.Context, repo repository.ReservationRepository, 
 		}
 
 		// Publish to queue
-		msg := mq.ReservationMessage{
+		msg := dto.ReservationMessage{
 			ReservationID:  res.ID,
 			UserID:         res.UserID,
 			PointAmount:    res.PointAmount,
