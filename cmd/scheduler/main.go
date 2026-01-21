@@ -33,11 +33,11 @@ func main() {
 	if environment == "" {
 		environment = "dev"
 	}
-	conn := mq.NewConnection(false, environment)
+	conn := rabbitmq.NewConnection(false, environment)
 	defer conn.Conn.Close()
 
 	reservationRepo := repository.NewReservationSQL(db)
-	producer := mq.NewRabbitProducer(conn.Conn)
+	producer := rabbitmq.NewRabbitProducer(conn.Conn)
 
 	// Setup graceful shutdown
 	ctx, cancel := context.WithCancel(context.Background())
@@ -66,7 +66,7 @@ func main() {
 }
 
 // 予約をスキャンして、メッセージをキューに流す。
-func scanAndPublish(ctx context.Context, repo repository.ReservationRepository, producer *mq.RabbitProducer) error {
+func scanAndPublish(ctx context.Context, repo repository.ReservationRepository, producer *rabbitmq.RabbitProducer) error {
 	now := time.Now()
 	reservations, err := repo.GetPendingReservations(ctx, now) // 実行待ちの予約を取得する。
 	if err != nil {
