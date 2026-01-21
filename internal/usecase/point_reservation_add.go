@@ -10,23 +10,23 @@ import (
 	"pointservice/internal/infra/repository"
 )
 
-type AddReservationPointUseCase interface {
+type PointReservationAddUseCase interface {
 	Execute(ctx context.Context, msg amqp.Delivery) error
 }
-type AddReservationPointUseCaseImpl struct {
+type PointReservationAddUseCaseImpl struct {
 	pointRepo       repository.PointRepository
 	reservationRepo repository.ReservationRepository
 }
 
-func NewAddReservationPointUseCase(pointRepo repository.PointRepository, reservationRepo repository.ReservationRepository) AddReservationPointUseCase {
-	return &AddReservationPointUseCaseImpl{
+func NewPointReservationAddUseCase(pointRepo repository.PointRepository, reservationRepo repository.ReservationRepository) PointReservationAddUseCase {
+	return &PointReservationAddUseCaseImpl{
 		pointRepo:       pointRepo,
 		reservationRepo: reservationRepo,
 	}
 }
 
 // Execute 予約メッセージを処理する
-func (a AddReservationPointUseCaseImpl) Execute(
+func (a PointReservationAddUseCaseImpl) Execute(
 	ctx context.Context,
 	msg amqp.Delivery,
 ) error {

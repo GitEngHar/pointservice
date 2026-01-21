@@ -30,8 +30,8 @@ func main() {
 	defer closeDB()
 	pointRepo := repository.NewPointSQL(db)
 	reservationRepo := repository.NewReservationSQL(db)
-	addReservationUseCase := usecase.NewAddReservationPointUseCase(pointRepo, reservationRepo)
-	pointWorkerHandler := presentation.NewPointWorkerHandler(addReservationUseCase)
+	pointReservationAdd := usecase.NewPointReservationAddUseCase(pointRepo, reservationRepo)
+	pointWorkerHandler := presentation.NewPointWorkerHandler(pointReservationAdd)
 
 	log.Println("Starting point grant worker...")
 	conn := rabbitmq.NewConnection(true, environment)

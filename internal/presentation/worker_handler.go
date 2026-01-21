@@ -8,20 +8,20 @@ import (
 )
 
 type PointWorkerHandler struct {
-	addReservationPointUseCase usecase.AddReservationPointUseCase
+	pointReservationAdd usecase.PointReservationAddUseCase
 }
 
 func NewPointWorkerHandler(
-	addReservationPointUseCase usecase.AddReservationPointUseCase,
+	pointReservationAddUseCase usecase.PointReservationAddUseCase,
 ) *PointWorkerHandler {
 	return &PointWorkerHandler{
-		addReservationPointUseCase,
+		pointReservationAdd: pointReservationAddUseCase,
 	}
 }
 
 func (p *PointWorkerHandler) PointReserveWorker(c context.Context, msgs <-chan amqp.Delivery) {
 	for msg := range msgs {
-		if er := p.addReservationPointUseCase.Execute(c, msg); er != nil {
+		if er := p.pointReservationAdd.Execute(c, msg); er != nil {
 			log.Printf("Error processing message: %v", er)
 			// このメッセージの処理に失敗しました」とキュー（例：RabbitMQ など）に通知する
 			if nackErr := msg.Nack(false, true); nackErr != nil {

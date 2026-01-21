@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/signal"
 	"pointservice/internal/infra/aync/dto"
+	"pointservice/internal/infra/aync/rabbitmq"
 	"syscall"
 	"time"
 
@@ -17,31 +18,31 @@ import (
 )
 
 // スキャン（見回り）をする間隔。ここでは「10秒に1回」。
-const scanInterval = 10 * time.Second
+const (
+	defaultEnvironment = "dev"
+	scanInterval       = 10 * time.Second
+)
 
 func main() {
-	log.Println("Starting reservation scheduler...")
-
-	// Connect to DB
-	db, dbCloser := mysql.ConnectDB()
-	defer func() {
-		_ = dbCloser()
-	}()
-
-	// Connect to RabbitMQ
-	environment := os.Getenv("ENVIRONMENT")
-	if environment == "" {
-		environment = "dev"
+	var environment = defaultEnvironment
+	if v := os.Getenv("ENVIRONMENT"); v != "" {
+		environment = v
 	}
+	log.Println("Starting reservation scheduler...")
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	// Connect to DB
+	db, closeDB := mysql.ConnectDB()
+	defer closeDB()
 	conn := rabbitmq.NewConnection(false, environment)
 	defer conn.Conn.Close()
 
 	reservationRepo := repository.NewReservationSQL(db)
 	producer := rabbitmq.NewRabbitProducer(conn.Conn)
+	// TODO usecase追加
+	//TODO handler追加する
 
 	// Setup graceful shutdown
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
 
 	// OSからの終了合図（Ctrl+Cとか）。
 	sigCh := make(chan os.Signal, 1)
@@ -52,6 +53,7 @@ func main() {
 
 	log.Printf("Scheduler running, scanning every %v\n", scanInterval)
 
+	//TODO handler移行
 	for {
 		select {
 		case <-ticker.C: // 10秒経ったら、中の処理をやる。
