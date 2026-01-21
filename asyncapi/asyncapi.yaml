@@ -1,0 +1,102 @@
+asyncapi: 2.6.0
+info:
+  title: PointService AsyncAPI
+  version: '1.0.0'
+  description: Messaging API for PointService using RabbitMQ.
+
+servers:
+  dev:
+    url: amqp://rabbitmq:5672
+    protocol: amqp
+    description: Development RabbitMQ server
+    security:
+      - user-password: []
+
+channels:
+  sampleQueue:
+    description: Queue for sending and receiving point updates.
+    publish:
+      summary: Send point update
+      operationId: sendPoint
+      message:
+        $ref: '#/components/messages/Point'
+    subscribe:
+      summary: Receive point update
+      operationId: receivePoint
+      message:
+        $ref: '#/components/messages/Point'
+
+  reservationQueue:
+    description: Queue for sending reservation requests.
+    publish:
+      summary: Send reservation request
+      operationId: sendReservation
+      message:
+        $ref: '#/components/messages/Reservation'
+
+components:
+  securitySchemes:
+    user-password:
+      type: userPassword
+
+  messages:
+    Point:
+      name: Point
+      title: Point Message
+      summary: Message containing point information.
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/Point'
+
+    Reservation:
+      name: Reservation
+      title: Reservation Message
+      summary: Message containing reservation information.
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/Reservation'
+
+  schemas:
+    Point:
+      type: object
+      description: Point domain model
+      required:
+        - user_id
+        - point_num
+      properties:
+        user_id:
+          type: string
+          description: User ID
+        point_num:
+          type: integer
+          description: Number of points
+        created_at:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        updated_at:
+          type: string
+          format: date-time
+          description: Update timestamp
+
+    Reservation:
+      type: object
+      description: Reservation message payload
+      required:
+        - reservation_id
+        - user_id
+        - point_amount
+        - idempotency_key
+      properties:
+        reservation_id:
+          type: string
+          description: Reservation ID
+        user_id:
+          type: string
+          description: User ID
+        point_amount:
+          type: integer
+          description: Amount of points for reservation
+        idempotency_key:
+          type: string
+          description: Idempotency key for deduplication
