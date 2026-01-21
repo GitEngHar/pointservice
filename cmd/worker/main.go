@@ -8,29 +8,32 @@ import (
 	"pointservice/internal/infra/aync/rabbitmq"
 	"pointservice/internal/infra/database/mysql"
 	"pointservice/internal/infra/repository"
+	"pointservice/internal/presentation"
 	"pointservice/internal/usecase"
+	"sync"
 	"syscall"
 )
 
 const (
-	reservationQueueName = "reservationQueue"
+	defaultEnvironment = "dev"
 )
 
+// main 依存関係の呼び出し, 環境変数, アプリケーションの起動, クリーンシャットダウン
 func main() {
-	log.Println("Starting point grant worker...")
+	var environment = defaultEnvironment
+	if v := os.Getenv("ENVIRONMENT"); v != "" {
+		environment = v
+	}
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
-
 	db, closeDB := mysql.ConnectDB()
 	defer closeDB()
 	pointRepo := repository.NewPointSQL(db)
 	reservationRepo := repository.NewReservationSQL(db)
 	addReservationUseCase := usecase.NewAddReservationPointUseCase(pointRepo, reservationRepo)
-	environment := os.Getenv("ENVIRONMENT")
-	if environment == "" {
-		environment = "dev"
-	}
+	pointWorkerHandler := presentation.NewPointWorkerHandler(addReservationUseCase)
 
+	log.Println("Starting point grant worker...")
 	conn := rabbitmq.NewConnection(true, environment)
 	defer conn.Conn.Close()
 	defer conn.Ch.Close()
@@ -44,25 +47,13 @@ func main() {
 	}
 
 	log.Println("Worker waiting for messages...")
-
+	var wg sync.WaitGroup
 	go func() {
-		for msg := range msgs {
-			if er := addReservationUseCase.Execute(ctx, msg); er != nil {
-				log.Printf("Error processing message: %v", er)
-				// このメッセージの処理に失敗しました」とキュー（例：RabbitMQ など）に通知する
-				if nackErr := msg.Nack(false, true); nackErr != nil {
-					log.Printf("Failed to nack message: %v", nackErr)
-				}
-				continue
-			}
-			// Ack on success
-			if ackErr := msg.Ack(false); ackErr != nil {
-				log.Printf("Failed to ack message: %v", ackErr)
-			}
-		}
+		defer wg.Done()
+		pointWorkerHandler.PointReserveWorker(ctx, msgs)
 	}()
-
-	log.Printf("Received signal %v, shutting down...", sig)
+	<-ctx.Done()
+	log.Println("Stopping point grant worker...")
+	wg.Wait()
+	log.Println("Worker gracefully stopped")
 }
-
-// TODO useCaseとhandler

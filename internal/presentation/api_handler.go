@@ -2,10 +2,8 @@ package presentation
 
 import (
 	"database/sql"
-	"errors"
 	"fmt"
 	"net/http"
-	"pointservice/internal/domain"
 	"pointservice/internal/infra/repository"
 	"pointservice/internal/presentation/api"
 	"pointservice/internal/usecase"
@@ -78,7 +76,7 @@ func (p *PointHandler) PointConfirm(c echo.Context) error {
 	return c.JSON(http.StatusOK, successMessage)
 }
 
-// ポイント予約（仮押さえ）を受け付ける窓口となる関数。
+// PointReserve ポイント予約（仮押さえ）を受け付ける窓口となる関数。
 func (p *PointHandler) PointReserve(c echo.Context) error {
 	ctx := c.Request().Context()
 	reservationDTO := new(usecase.ReservationCreateInput) // 予約情報を入れるための「空っぽの箱（構造体）」を作っている。
@@ -91,24 +89,4 @@ func (p *PointHandler) PointReserve(c echo.Context) error {
 		return handleErr(err)
 	}
 	return c.JSON(http.StatusCreated, result)
-}
-
-func handleErr(err error) error {
-	errMessages := api.NewError(err)
-	switch {
-	case errors.Is(err, domain.ErrPointBelowZero):
-		return echo.NewHTTPError(http.StatusBadRequest, errMessages)
-	case errors.Is(err, domain.ErrInvalidFormatUserID):
-		return echo.NewHTTPError(http.StatusBadRequest, errMessages)
-	case errors.Is(err, domain.ErrUserNotFound):
-		return echo.NewHTTPError(http.StatusBadRequest, errMessages)
-	case errors.Is(err, domain.ErrSelectUserID):
-		return echo.NewHTTPError(http.StatusInternalServerError, errMessages)
-	case errors.Is(err, domain.ErrUpdatePoint):
-		return echo.NewHTTPError(http.StatusInternalServerError, errMessages)
-	case errors.Is(err, domain.ErrCreateOrUpdatePoint):
-		return echo.NewHTTPError(http.StatusInternalServerError, errMessages)
-	default:
-		return echo.NewHTTPError(http.StatusInternalServerError, errMessages)
-	}
 }
