@@ -81,8 +81,7 @@ func Test_Execute(t *testing.T) {
 	t.Parallel()
 
 	mockRepo := StubPointRepository{}
-	mockProducer := StubProducer{}
-	uc := NewPointUpsertInterceptor(mockRepo, mockProducer)
+	uc := NewPointUpsertInterceptor(mockRepo)
 	tests := []struct {
 		name              string
 		args              args

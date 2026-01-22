@@ -1,0 +1,62 @@
+asyncapi: '2.6.0'
+info:
+  title: Point Add Service
+  version: '1.0.0'
+
+servers:
+  rabbitmq:
+    url: amqp://localhost:5672
+    protocol: amqp
+
+channels:
+  point.expired:
+    publish:
+      summary: ポイント期限切れJOBを登録する
+      description: >
+        ポイントの有効期限切れを検知した際に発行されるイベント。
+      message:
+        oneOf:
+          - $ref: '#/components/messages/PointExpiredMessage'
+
+    subscribe:
+      summary: Worker がポイント失効処理を実行する
+      description: >
+        冪等性を担保し、失敗時は再試行またはDLQへ送られる。
+      message:
+        oneOf:
+          - $ref: '#/components/messages/PointExpiredMessage'
+
+    bindings:
+      amqp:
+        is: routingKey
+        exchange:
+          name: point.events
+          type: topic
+
+components:
+  messages:
+    PointExpiredMessage:
+      name: PointExpired
+      payload:
+        $ref: '#/components/schemas/PointExpired'
+      examples:
+        - payload:
+            expiredID: "exp-20250101-0001"
+            userID: "user-123"
+            idempotencyKey: "point-expired-user-123-20250101"
+
+  schemas:
+    PointExpired:
+      schemaFormat: application/schema+json;version=draft-07
+      type: object
+      required:
+        - expiredID
+        - userID
+        - idempotencyKey
+      properties:
+        expiredID:
+          type: string
+        userID:
+          type: string
+        idempotencyKey:
+          type: string

@@ -1,11 +1,9 @@
-package mq
+package rabbitmq
 
 import (
 	"context"
-	"log"
-	"pointservice/internal/usecase/tally"
-
 	amqp "github.com/rabbitmq/amqp091-go"
+	"log"
 )
 
 const (
@@ -16,7 +14,7 @@ const (
 type RabbitConsumer struct {
 }
 
-func NewRabbitConsumer() tally.Consumer {
+func NewRabbitConsumer() *RabbitConsumer {
 	return &RabbitConsumer{}
 }
 
@@ -26,7 +24,6 @@ func (r *RabbitConsumer) GetSumPoint(_ context.Context) error {
 		return err
 	}
 	defer conn.Close()
-	//TODO channel?
 	ch, err := conn.Channel()
 	defer ch.Close()
 	if err != nil {
