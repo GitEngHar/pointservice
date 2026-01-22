@@ -20,6 +20,16 @@ type PointReservationConfirmUseCaseImpl struct {
 	reservationRepo repository.ReservationRepository
 }
 
+func NewPointReservationConfirmUseCase(
+	pointRepo repository.PointRepository,
+	reservationRepo repository.ReservationRepository,
+) PointReservationConfirmUseCase {
+	return &PointReservationConfirmUseCaseImpl{
+		pointRepo:       pointRepo,
+		reservationRepo: reservationRepo,
+	}
+}
+
 func (p PointReservationConfirmUseCaseImpl) Execute(ctx context.Context, producer *rabbitmq.RabbitProducer) error {
 	now := time.Now()
 	reservations, err := p.reservationRepo.GetPendingReservations(ctx, now) // 実行待ちの予約を取得する。

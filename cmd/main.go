@@ -12,7 +12,7 @@ func main() {
 	defer func() {
 		_ = closer()
 	}()
-	repo := repository.NewPointSQL(db)
+	repo := repository.NewPointRepository(db)
 	reservationRepo := repository.NewReservationSQL(db)
 	defer func() {
 		if closer != nil {

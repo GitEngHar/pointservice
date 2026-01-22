@@ -28,7 +28,7 @@ func main() {
 	defer stop()
 	db, closeDB := mysql.ConnectDB()
 	defer closeDB()
-	pointRepo := repository.NewPointSQL(db)
+	pointRepo := repository.NewPointRepository(db)
 	reservationRepo := repository.NewReservationSQL(db)
 	pointReservationAdd := usecase.NewPointReservationAddUseCase(pointRepo, reservationRepo)
 	pointWorkerHandler := presentation.NewPointWorkerHandler(pointReservationAdd)

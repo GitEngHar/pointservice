@@ -13,7 +13,7 @@ type PointRepository struct {
 	db *sql.DB
 }
 
-func NewPointSQL(db *sql.DB) PointRepository {
+func NewPointRepository(db *sql.DB) PointRepository {
 	return PointRepository{
 		db: db,
 	}
