@@ -15,15 +15,49 @@ Go の構造体定義 (`internal/domain/point.go` 等) を正とし、それら�
   - `npx` (Node.js に同梱)
   - `@asyncapi/cli` (v5系以上推奨)
 
-## 2. ディレクトリ構成
-```
+## 2. ディレクトリ構成とファイルの役割
+
+```text
 pointservice/
 ├── asyncapi/
-│   ├── asyncapi.yaml  # 定義ファイル本体 (v2.6.0)
-│   └── README.md      # 本手順書
-├── html/              # 生成されたドキュメント (HTML)
-└── internal/          # 実装コード (Go)
+│   ├── asyncapi.yaml              # 【ルート定義】 全体の目次のようなファイル
+│   ├── README.md                  # 本手順書
+│   │
+│   ├── servers/                   # 【接続先】 どのサーバーに繋ぐか
+│   │   └── rabbitmq.yaml          # (例: amqp://rabbitmq:5672)
+│   │
+│   ├── channels/                  # 【通信経路】 どのキュー/トピックを使うか
+│   │   ├── point.yaml             # ポイント関連のキュー定義
+│   │   └── reservation.yaml       # 予約関連のキュー定義
+│   │
+│   └── components/                # 【部品】 再利用する定義パーツ
+│       ├── securitySchemes.yaml   # 認証方式 (user/passなど)
+│       ├── messages/              # 【メッセージ】 「何を送るか」の定義
+│       │   ├── point.yaml         # (例: Point型データを送る)
+│       │   └── reservation.yaml
+│       └── schemas/               # 【データ型】 Goの構造体と対になる定義
+│           ├── point.yaml         # (例: user_id, point_num を持つJSONなど)
+│           └── reservation.yaml
+├── html/                          # 生成されたドキュメント (HTML)
+└── internal/                      # 実装コード (Go)
 ```
+
+### 各フォルダに何を書くか？
+
+- **`asyncapi.yaml` (ルート)**
+  - 基本的に自分で追記することは少ないです。新しいファイルを作った時に、それを読み込む (`$ref`) ための記述を追加します。
+
+- **`channels/` (通信経路)**
+  - 「新しいキューを作りたい」 → ここに新しい YAML ファイルを作ります。
+  - `publish` (送信) / `subscribe` (受信) の定義を書きます。
+
+- **`components/messages/` (メッセージ)**
+  - 「どんなメッセージを送るか」を定義します。具体的な中身は `schemas` を参照させます。
+
+- **`components/schemas/` (データ型)**
+  - **一番よく編集する場所です。**
+  - Go の構造体 (`struct`) にフィールドを追加したら、ここも合わせて修正します。
+  - 例: `user_id: string` や `amount: integer` など。
 
 ## 3. 環境セットアップ
 特別なツールのインストールは不要です。`npx` コマンドが利用可能な環境 (Node.js インストール済み) であれば、誰でも同じバージョンのツールを実行できます。

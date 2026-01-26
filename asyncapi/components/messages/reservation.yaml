@@ -1,0 +1,6 @@
+name: Reservation
+title: Reservation Message
+summary: Message containing reservation information.
+contentType: application/json
+payload:
+  $ref: '../schemas/reservation.yaml'

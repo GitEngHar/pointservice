@@ -1,0 +1,11 @@
+description: Queue for sending and receiving point updates.
+publish:
+  summary: Send point update
+  operationId: sendPoint
+  message:
+    $ref: '../components/messages/point.yaml'
+subscribe:
+  summary: Receive point update
+  operationId: receivePoint
+  message:
+    $ref: '../components/messages/point.yaml'

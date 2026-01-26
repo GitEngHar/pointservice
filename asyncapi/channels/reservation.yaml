@@ -1,0 +1,6 @@
+description: Queue for sending reservation requests.
+publish:
+  summary: Send reservation request
+  operationId: sendReservation
+  message:
+    $ref: '../components/messages/reservation.yaml'
