@@ -1,0 +1,14 @@
+description: |
+  ポイント履歴アーカイブ処理用キュー。
+  テーブルに保持された加算・減算履歴をS3またはローカルストレージにアーカイブし、
+  転送完了後にテーブルから削除する処理をトリガーします。
+publish:
+  summary: ポイント履歴アーカイブリクエストを送信
+  operationId: sendPointHistoryArchiveRequest
+  message:
+    $ref: '../components/messages/point-history-archive.yaml'
+subscribe:
+  summary: ポイント履歴アーカイブリクエストを受信
+  operationId: receivePointHistoryArchiveRequest
+  message:
+    $ref: '../components/messages/point-history-archive.yaml'

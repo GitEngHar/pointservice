@@ -14,6 +14,8 @@ channels:
     $ref: ./channels/point.yaml
   reservationQueue:
     $ref: ./channels/reservation.yaml
+  pointHistoryArchiveQueue:
+    $ref: ./channels/point-history-archive.yaml
 
 components:
   securitySchemes:
@@ -24,8 +26,12 @@ components:
       $ref: ./components/messages/point.yaml
     Reservation:
       $ref: ./components/messages/reservation.yaml
+    PointHistoryArchive:
+      $ref: ./components/messages/point-history-archive.yaml
   schemas:
     Point:
       $ref: ./components/schemas/point.yaml
     Reservation:
       $ref: ./components/schemas/reservation.yaml
+    PointHistoryArchive:
+      $ref: ./components/schemas/point-history-archive.yaml
