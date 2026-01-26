@@ -1,0 +1,20 @@
+type: object
+description: Reservation message payload
+required:
+  - reservation_id
+  - user_id
+  - point_amount
+  - idempotency_key
+properties:
+  reservation_id:
+    type: string
+    description: Reservation ID
+  user_id:
+    type: string
+    description: User ID
+  point_amount:
+    type: integer
+    description: Amount of points for reservation
+  idempotency_key:
+    type: string
+    description: Idempotency key for deduplication

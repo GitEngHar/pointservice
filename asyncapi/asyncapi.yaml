@@ -1,4 +1,5 @@
 asyncapi: 2.6.0
+
 info:
   title: PointService AsyncAPI
   version: '1.0.0'
@@ -6,97 +7,31 @@ info:
 
 servers:
   dev:
-    url: amqp://rabbitmq:5672
-    protocol: amqp
-    description: Development RabbitMQ server
-    security:
-      - user-password: []
+    $ref: ./servers/rabbitmq.yaml
 
 channels:
   sampleQueue:
-    description: Queue for sending and receiving point updates.
-    publish:
-      summary: Send point update
-      operationId: sendPoint
-      message:
-        $ref: '#/components/messages/Point'
-    subscribe:
-      summary: Receive point update
-      operationId: receivePoint
-      message:
-        $ref: '#/components/messages/Point'
-
+    $ref: ./channels/point.yaml
   reservationQueue:
-    description: Queue for sending reservation requests.
-    publish:
-      summary: Send reservation request
-      operationId: sendReservation
-      message:
-        $ref: '#/components/messages/Reservation'
+    $ref: ./channels/reservation.yaml
+  pointHistoryArchiveQueue:
+    $ref: ./channels/point-history-archive.yaml
 
 components:
   securitySchemes:
     user-password:
-      type: userPassword
-
+      $ref: ./components/securitySchemes.yaml
   messages:
     Point:
-      name: Point
-      title: Point Message
-      summary: Message containing point information.
-      contentType: application/json
-      payload:
-        $ref: '#/components/schemas/Point'
-
+      $ref: ./components/messages/point.yaml
     Reservation:
-      name: Reservation
-      title: Reservation Message
-      summary: Message containing reservation information.
-      contentType: application/json
-      payload:
-        $ref: '#/components/schemas/Reservation'
-
+      $ref: ./components/messages/reservation.yaml
+    PointHistoryArchive:
+      $ref: ./components/messages/point-history-archive.yaml
   schemas:
     Point:
-      type: object
-      description: Point domain model
-      required:
-        - user_id
-        - point_num
-      properties:
-        user_id:
-          type: string
-          description: User ID
-        point_num:
-          type: integer
-          description: Number of points
-        created_at:
-          type: string
-          format: date-time
-          description: Creation timestamp
-        updated_at:
-          type: string
-          format: date-time
-          description: Update timestamp
-
+      $ref: ./components/schemas/point.yaml
     Reservation:
-      type: object
-      description: Reservation message payload
-      required:
-        - reservation_id
-        - user_id
-        - point_amount
-        - idempotency_key
-      properties:
-        reservation_id:
-          type: string
-          description: Reservation ID
-        user_id:
-          type: string
-          description: User ID
-        point_amount:
-          type: integer
-          description: Amount of points for reservation
-        idempotency_key:
-          type: string
-          description: Idempotency key for deduplication
+      $ref: ./components/schemas/reservation.yaml
+    PointHistoryArchive:
+      $ref: ./components/schemas/point-history-archive.yaml

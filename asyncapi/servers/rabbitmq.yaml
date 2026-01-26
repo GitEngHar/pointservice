@@ -1,0 +1,5 @@
+url: amqp://rabbitmq:5672
+protocol: amqp
+description: Development RabbitMQ server
+security:
+  - user-password: []

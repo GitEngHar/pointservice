@@ -1,0 +1,93 @@
+type: object
+description: |
+  ポイント履歴アーカイブリクエストスキーマ。
+  直近のポイント加算・減算履歴をアーカイブストレージへ転送し、
+  転送完了後にテーブルから削除する処理の設定を定義します。
+required:
+  - archive_id
+  - storage_type
+  - retention_threshold
+properties:
+  archive_id:
+    type: string
+    format: uuid
+    description: アーカイブ処理の一意識別子
+  storage_type:
+    type: string
+    enum:
+      - s3
+      - local
+    description: |
+      アーカイブ先ストレージタイプ。
+      環境変数 ARCHIVE_STORAGE_TYPE または起動時フラグ --archive-storage で切り替え可能。
+  s3_config:
+    type: object
+    description: S3ストレージ設定（storage_type=s3 の場合に使用）
+    properties:
+      bucket_name:
+        type: string
+        description: S3バケット名
+      prefix:
+        type: string
+        description: オブジェクトキーのプレフィックス
+      region:
+        type: string
+        description: AWSリージョン
+  local_config:
+    type: object
+    description: ローカルストレージ設定（storage_type=local の場合に使用）
+    properties:
+      base_path:
+        type: string
+        description: アーカイブファイルの出力先ディレクトリパス
+      file_format:
+        type: string
+        enum:
+          - json
+          - csv
+        default: json
+        description: 出力ファイルフォーマット
+  retention_threshold:
+    type: integer
+    minimum: 1
+    description: |
+      アーカイブをトリガーするレコード数の閾値。
+      この値を超えたらアーカイブ処理が実行されます。
+  batch_size:
+    type: integer
+    minimum: 100
+    maximum: 10000
+    default: 1000
+    description: |
+      1回のアーカイブ処理で転送するレコード数。
+      テーブルロックの影響を最小限に抑えるため、バッチ単位で処理します。
+  lock_strategy:
+    type: string
+    enum:
+      - row_level
+      - batch_optimistic
+      - none
+    default: batch_optimistic
+    description: |
+      テーブルロック戦略。
+      - row_level: 行レベルロック（高い一貫性、低いスループット）
+      - batch_optimistic: 楽観的ロック + バッチ処理（バランス型、推奨）
+      - none: ロックなし（高スループット、重複リスクあり）
+  delete_after_transfer:
+    type: boolean
+    default: true
+    description: |
+      転送完了後にテーブルからデータを削除するかどうか。
+      true の場合、アーカイブ成功後に対象レコードを全て削除します。
+  timestamp_from:
+    type: string
+    format: date-time
+    description: アーカイブ対象の開始日時（この日時以降のレコードが対象）
+  timestamp_to:
+    type: string
+    format: date-time
+    description: アーカイブ対象の終了日時（この日時以前のレコードが対象）
+  triggered_at:
+    type: string
+    format: date-time
+    description: アーカイブ処理がトリガーされた日時

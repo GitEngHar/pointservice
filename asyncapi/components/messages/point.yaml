@@ -1,0 +1,6 @@
+name: Point
+title: Point Message
+summary: Message containing point information.
+contentType: application/json
+payload:
+  $ref: '../schemas/point.yaml'
