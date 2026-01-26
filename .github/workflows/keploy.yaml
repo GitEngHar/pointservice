@@ -21,8 +21,10 @@ jobs:
       # Go の依存整理（任意だが安全）
       - name: Go mod tidy
         run: make tidy
+      - name: Build Base image
+        run: docker build --load -t point-service-base:1.0 -f DockerfileBase .
       - name: Build image
-        run: docker build --target final -t point-service:1.0 .
+        run: docker build --target final -t point-service:1.0 -f DockerfileApp .
       - name: Start MiddleWare
         run: docker compose -f docker-compose.middleware.yml up -d
       - name: Install Keploy
