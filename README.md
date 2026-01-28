@@ -121,4 +121,35 @@ Testrun passed for testcase with id: "test-3"
 🐰 Keploy: 2025-12-22T23:53:57.845781+09:00     INFO    exiting the current process as the command is moved to docker
 ```
 
+```
+
 </details>
+
+## Spec と実装の対応
+
+| Spec | Go 実装 |
+|----|----|
+| openapi/paths/point/add.yaml | internal/presentation/point_handler.go (PointAdd) |
+| openapi/paths/point/sub.yaml | internal/presentation/point_handler.go (PointSub) |
+| openapi/paths/point/confirm.yaml | internal/presentation/point_handler.go (PointConfirm) |
+| openapi/paths/reservation/create.yaml | internal/presentation/point_handler.go (PointReserve) |
+| asyncapi/channels/point/updated.yaml | internal/usecase/point_upsert.go (Publisher) |
+| asyncapi/channels/reservation/created.yaml | cmd/worker/main.go (Consumer) |
+
+# 新しく追加する時のルール
+
+### REST API 追加手順
+
+1. `openapi/paths/<domain>/<usecase>.yaml` を追加
+2. `openapi/paths/<domain>/index.yaml` に追記
+3. schema が必要なら `openapi/components/schemas` に追加し index.yaml 更新
+4. handler を実装
+5. CI で OpenAPI validate
+
+### Event 追加手順
+
+1. `asyncapi/channels/<domain>/<event>.yaml` を追加
+2. `asyncapi/channels/index.yaml` に追記
+3. `asyncapi/components/messages/<domain>.yaml` (or separate) 追加
+4. schema が必要なら `asyncapi/components/schemas`
+5. publisher / consumer 実装

@@ -1,0 +1,6 @@
+Point:
+  $ref: ./point.yaml
+Reservation:
+  $ref: ./reservation.yaml
+PointHistoryArchive:
+  $ref: ./point-history-archive.yaml

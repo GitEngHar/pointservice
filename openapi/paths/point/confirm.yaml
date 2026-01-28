@@ -1,0 +1,25 @@
+get:
+  summary: Confirm Points
+  operationId: confirmPoint
+  tags:
+    - Point
+  description: Note, currently implemented as GET with JSON Body.
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/schemas/index.yaml#/PointConfirmInput
+  responses:
+    '200':
+      description: Successful Operation
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/index.yaml#/SuccessResponse
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/index.yaml#/ErrorResponse

@@ -3,4 +3,4 @@ publish:
   summary: Send reservation request
   operationId: sendReservation
   message:
-    $ref: '../components/messages/reservation.yaml'
+    $ref: '../../components/messages/index.yaml#/Reservation'

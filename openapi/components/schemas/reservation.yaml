@@ -1,0 +1,27 @@
+ReservationCreateInput:
+  type: object
+  properties:
+    user_id:
+      type: string
+    point_amount:
+      type: integer
+    execute_at:
+      type: string
+      format: date-time
+    idempotency_key:
+      type: string
+  required:
+    - user_id
+    - point_amount
+    - execute_at
+
+ReservationCreateOutput:
+  type: object
+  properties:
+    reservation_id:
+      type: string
+    status:
+      type: string
+    execute_at:
+      type: string
+      format: date-time

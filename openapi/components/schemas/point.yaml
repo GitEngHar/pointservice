@@ -1,0 +1,29 @@
+PointUpsertInput:
+  type: object
+  properties:
+    user_id:
+      type: string
+    point_num:
+      type: integer
+  required:
+    - user_id
+    - point_num
+
+PointSubInput:
+  type: object
+  properties:
+    user_id:
+      type: string
+    point_num:
+      type: integer
+  required:
+    - user_id
+    - point_num
+
+PointConfirmInput:
+  type: object
+  properties:
+    user_id:
+      type: string
+  required:
+    - user_id

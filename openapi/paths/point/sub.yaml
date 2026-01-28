@@ -1,0 +1,24 @@
+put:
+  summary: ポイント減算API
+  operationId: subPoint
+  tags:
+    - Point
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/schemas/index.yaml#/PointSubInput
+  responses:
+    '200':
+      description: Successful Operation
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/index.yaml#/SuccessResponse
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/index.yaml#/ErrorResponse

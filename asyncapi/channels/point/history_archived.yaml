@@ -1,0 +1,6 @@
+description: Queue for point history archive requests.
+publish:
+  summary: Send history archive request
+  operationId: sendhistoryArchive
+  message:
+    $ref: '../../components/messages/index.yaml#/PointHistoryArchive'
