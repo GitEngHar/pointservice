@@ -1,0 +1,19 @@
+# Point Domain
+PointUpsertInput:
+  $ref: ./point.yaml#/PointUpsertInput
+PointSubInput:
+  $ref: ./point.yaml#/PointSubInput
+PointConfirmInput:
+  $ref: ./point.yaml#/PointConfirmInput
+
+# Reservation Domain
+ReservationCreateInput:
+  $ref: ./reservation.yaml#/ReservationCreateInput
+ReservationCreateOutput:
+  $ref: ./reservation.yaml#/ReservationCreateOutput
+
+# Common
+SuccessResponse:
+  $ref: ./common.yaml#/SuccessResponse
+ErrorResponse:
+  $ref: ./common.yaml#/ErrorResponse

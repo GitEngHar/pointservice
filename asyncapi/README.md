@@ -20,24 +20,31 @@ Go の構造体定義 (`internal/domain/point.go` 等) を正とし、それら�
 ```text
 pointservice/
 ├── asyncapi/
-│   ├── asyncapi.yaml              # 【ルート定義】 全体の目次のようなファイル
+│   ├── asyncapi.yaml              # 【ルート定義】 全体の目次 ($ref のみ)
 │   ├── README.md                  # 本手順書
 │   │
-│   ├── servers/                   # 【接続先】 どのサーバーに繋ぐか
-│   │   └── rabbitmq.yaml          # (例: amqp://rabbitmq:5672)
+│   ├── servers/                   # 【接続先】
+│   │   └── rabbitmq.yaml
 │   │
-│   ├── channels/                  # 【通信経路】 どのキュー/トピックを使うか
-│   │   ├── point.yaml             # ポイント関連のキュー定義
-│   │   └── reservation.yaml       # 予約関連のキュー定義
+│   ├── channels/                  # 【通信経路】
+│   │   ├── index.yaml             # チャネル一覧 (各種ドメインファイルをinclude)
+│   │   ├── point/                 # ポイントドメイン
+│   │   │   ├── updated.yaml       # ポイント更新イベント
+│   │   │   └── history_archived.yaml
+│   │   └── reservation/           # 予約ドメイン
+│   │       └── created.yaml       # 予約作成イベント
 │   │
-│   └── components/                # 【部品】 再利用する定義パーツ
-│       ├── securitySchemes.yaml   # 認証方式 (user/passなど)
-│       ├── messages/              # 【メッセージ】 「何を送るか」の定義
-│       │   ├── point.yaml         # (例: Point型データを送る)
-│       │   └── reservation.yaml
-│       └── schemas/               # 【データ型】 Goの構造体と対になる定義
-│           ├── point.yaml         # (例: user_id, point_num を持つJSONなど)
-│           └── reservation.yaml
+│   └── components/                # 【部品】
+│       ├── index.yaml             # Components一覧
+│       ├── securitySchemes.yaml
+│       ├── messages/              # 【メッセージ】
+│       │   ├── index.yaml
+│       │   ├── point.yaml
+│       │   └── ...
+│       └── schemas/               # 【データ型】
+│           ├── index.yaml
+│           ├── point.yaml
+│           └── ...
 ├── html/                          # 生成されたドキュメント (HTML)
 └── internal/                      # 実装コード (Go)
 ```
@@ -45,19 +52,17 @@ pointservice/
 ### 各フォルダに何を書くか？
 
 - **`asyncapi.yaml` (ルート)**
-  - 基本的に自分で追記することは少ないです。新しいファイルを作った時に、それを読み込む (`$ref`) ための記述を追加します。
+  - `$ref` のみを含む目次ファイルです。極力変更せず、各ディレクトリの `index.yaml` 経由で定義を読み込みます。
 
 - **`channels/` (通信経路)**
-  - 「新しいキューを作りたい」 → ここに新しい YAML ファイルを作ります。
-  - `publish` (送信) / `subscribe` (受信) の定義を書きます。
+  - ドメインごとにサブディレクトリ (`point/`, `reservation/` 等) を作成しています。
+  - 新しいイベントを追加する場合:
+    1. ドメインディレクトリ配下に YAML (`xxx.yaml`) を作成
+    2. `channels/index.yaml` にそのファイルの参照を追記
 
-- **`components/messages/` (メッセージ)**
-  - 「どんなメッセージを送るか」を定義します。具体的な中身は `schemas` を参照させます。
-
-- **`components/schemas/` (データ型)**
-  - **一番よく編集する場所です。**
-  - Go の構造体 (`struct`) にフィールドを追加したら、ここも合わせて修正します。
-  - 例: `user_id: string` や `amount: integer` など。
+- **`components/` (部品)**
+  - `schemas/` (データ型), `messages/` (メッセージ意味付け) も同様に `index.yaml` で管理しています。
+  - Go の構造体変更時は `schemas/` 配下の個別ファイルを修正します。
 
 ## 3. 環境セットアップ
 特別なツールのインストールは不要です。`npx` コマンドが利用可能な環境 (Node.js インストール済み) であれば、誰でも同じバージョンのツールを実行できます。

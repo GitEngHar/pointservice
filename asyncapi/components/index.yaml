@@ -1,0 +1,6 @@
+schemas:
+  $ref: ./schemas/index.yaml
+messages:
+  $ref: ./messages/index.yaml
+securitySchemes:
+  $ref: ./securitySchemes.yaml

@@ -1,8 +1,7 @@
 asyncapi: 2.6.0
-
 info:
-  title: PointService AsyncAPI
-  version: '1.0.0'
+  title: Point Service Events
+  version: 1.0.0
   description: Messaging API for PointService using RabbitMQ.
 
 servers:
@@ -10,28 +9,7 @@ servers:
     $ref: ./servers/rabbitmq.yaml
 
 channels:
-  sampleQueue:
-    $ref: ./channels/point.yaml
-  reservationQueue:
-    $ref: ./channels/reservation.yaml
-  pointHistoryArchiveQueue:
-    $ref: ./channels/point-history-archive.yaml
+  $ref: ./channels/index.yaml
 
 components:
-  securitySchemes:
-    user-password:
-      $ref: ./components/securitySchemes.yaml
-  messages:
-    Point:
-      $ref: ./components/messages/point.yaml
-    Reservation:
-      $ref: ./components/messages/reservation.yaml
-    PointHistoryArchive:
-      $ref: ./components/messages/point-history-archive.yaml
-  schemas:
-    Point:
-      $ref: ./components/schemas/point.yaml
-    Reservation:
-      $ref: ./components/schemas/reservation.yaml
-    PointHistoryArchive:
-      $ref: ./components/schemas/point-history-archive.yaml
+  $ref: ./components/index.yaml

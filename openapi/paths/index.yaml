@@ -1,0 +1,8 @@
+/point/add:
+  $ref: ./point/add.yaml
+/point/sub:
+  $ref: ./point/sub.yaml
+/point/confirm:
+  $ref: ./point/confirm.yaml
+/point/reserve:
+  $ref: ./reservation/create.yaml

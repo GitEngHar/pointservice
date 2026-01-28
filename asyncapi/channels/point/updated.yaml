@@ -3,9 +3,9 @@ publish:
   summary: Send point update
   operationId: sendPoint
   message:
-    $ref: '../components/messages/point.yaml'
+    $ref: '../../components/messages/index.yaml#/Point'
 subscribe:
   summary: Receive point update
   operationId: receivePoint
   message:
-    $ref: '../components/messages/point.yaml'
+    $ref: '../../components/messages/index.yaml#/Point'

@@ -1,0 +1,6 @@
+point.updated:
+  $ref: ./point/updated.yaml
+reservation.created:
+  $ref: ./reservation/created.yaml
+point.history.archived:
+  $ref: ./point/history_archived.yaml

@@ -1,0 +1,24 @@
+post:
+  summary: ポイント加算予約受付API
+  operationId: createReservation
+  tags:
+    - Reservation
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/schemas/index.yaml#/ReservationCreateInput
+  responses:
+    '201':
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/index.yaml#/ReservationCreateOutput
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/index.yaml#/ErrorResponse

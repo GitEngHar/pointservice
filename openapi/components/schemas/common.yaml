@@ -1,0 +1,15 @@
+SuccessResponse:
+  type: object
+  properties:
+    messages:
+      type: array
+      items:
+        type: string
+
+ErrorResponse:
+  type: object
+  properties:
+    messages:
+      type: array
+      items:
+        type: string

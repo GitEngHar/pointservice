@@ -37,3 +37,9 @@ test-keploy: run-middleware build-base build-app
 down:
 	docker compose down -v || true
 
+# OpenAPI
+openapi-lint:
+	npx --package @redocly/cli@latest redocly lint openapi/openapi.yaml
+
+openapi-docs:
+	npx --package @redocly/cli@latest redocly build-docs openapi/openapi.yaml --output html/openapi/index.html

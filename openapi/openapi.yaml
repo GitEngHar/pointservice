@@ -1,0 +1,21 @@
+openapi: 3.0.3
+info:
+  title: Point Service API
+  version: 1.0.0
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  description: API for Point Service
+
+servers:
+  - $ref: ./servers/local.yaml
+
+security: []
+
+paths:
+  $ref: ./paths/index.yaml
+
+components:
+  schemas:
+    $ref: ./components/schemas/index.yaml
+  # Add other component types if they exist or are needed
