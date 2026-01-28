@@ -21,37 +21,11 @@ flowchart LR
 
 ## 2. 主要設計ポイント
 
-### 2.1 冪等性の実現 (Idempotency)
-
-Workerがメッセージを重複して受信した場合や、処理途中で失敗して再試行された場合でも、ポイントが二重に付与されないことを保証します。
-
-```sql
--- point_transactions テーブルで重複を防止
-INSERT IGNORE INTO point_transactions 
-  (id, idempotency_key, user_id, point_amount, created_at)
-VALUES (?, ?, ?, ?, ?)
-```
-
-- **仕組み**: `point_transactions` テーブルの `idempotency_key` (UNIQUE制約) を利用。
-- **挙動**: `INSERT IGNORE` (または `ON CONFLICT DO NOTHING`) が成功した（＝新規処理）場合のみ、ポイント残高テーブル `point_root` を更新します。失敗した（＝処理済み）場合は、何もせずに正常終了として扱います。
-
-### 2.2 状態遷移 (State Transition)
-
-予約の状態は以下のように遷移します。
-
-```
-PENDING (待機中)
-   ↓ スケジューラがPick
-PROCESSING (処理中 / Queue送信済み)
-   ↓ Workerが処理
-DONE (完了)  or  FAILED (失敗)
-```
-
 ---
 
-## 3. 実装詳細
+## 2. 実装詳細
 
-### 3.1 データベーススキーマ
+### 2.1 データベーススキーマ
 
 既存の `point_root` に加え、以下の2テーブルを追加しました。
 
@@ -85,7 +59,7 @@ CREATE TABLE point_transactions (
 );
 ```
 
-### 3.2 コンポーネント構成
+### 2.2 コンポーネント構成
 
 | コンポーネント | ファイル | 役割 |
 |---|---|---|
@@ -100,9 +74,9 @@ CREATE TABLE point_transactions (
 
 ---
 
-## 4. 使用方法と検証
+## 3. 使用方法と検証
 
-### 4.1 サービスの起動
+### 3.1 サービスの起動
 
 システムを構成する3つのプロセスを起動する必要があります。
 
@@ -117,7 +91,7 @@ go run cmd/scheduler/main.go
 go run cmd/worker/main.go
 ```
 
-### 4.2 API呼び出し例
+### 3.2 API呼び出し例
 
 ```bash
 curl -X POST http://localhost:1323/point/reserve \
@@ -131,7 +105,7 @@ curl -X POST http://localhost:1323/point/reserve \
 
 ---
 
-## 5. 検証結果
+## 4. 検証結果
 
 ### 自動テスト
 Unit Testによりドメインロジックとユースケースの正常系・異常系を検証済み。
