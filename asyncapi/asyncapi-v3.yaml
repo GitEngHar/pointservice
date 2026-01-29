@@ -1,0 +1,92 @@
+asyncapi: 3.0.0
+info:
+  title: Point Service Events
+  version: 1.0.0
+  description: Messaging API for PointService using RabbitMQ.
+
+servers:
+  dev:
+    host: rabbitmq:5672
+    protocol: amqp
+    description: Development RabbitMQ server
+
+channels:
+  pointUpdated:
+    address: point.updated
+    description: Queue for sending and receiving point updates.
+    messages:
+      Point:
+        $ref: '#/components/messages/Point'
+
+  reservationCreated:
+    address: reservation.created
+    description: Queue for sending reservation requests.
+    messages:
+      Reservation:
+        $ref: '#/components/messages/Reservation'
+
+  pointHistoryArchived:
+    address: point.history.archived
+    description: Queue for point history archive requests.
+    messages:
+      PointHistoryArchive:
+        $ref: '#/components/messages/PointHistoryArchive'
+
+operations:
+  sendPoint:
+    action: send
+    channel:
+      $ref: '#/channels/pointUpdated'
+    summary: Send point update
+
+  receivePoint:
+    action: receive
+    channel:
+      $ref: '#/channels/pointUpdated'
+    summary: Receive point update
+
+  sendReservation:
+    action: send
+    channel:
+      $ref: '#/channels/reservationCreated'
+    summary: Send reservation request
+
+  sendHistoryArchive:
+    action: send
+    channel:
+      $ref: '#/channels/pointHistoryArchived'
+    summary: Send history archive request
+
+components:
+  schemas:
+    Point:
+      $ref: ./components/schemas/point.yaml
+    Reservation:
+      $ref: ./components/schemas/reservation.yaml
+    PointHistoryArchive:
+      $ref: ./components/schemas/point-history-archive.yaml
+
+  messages:
+    Point:
+      name: Point
+      title: Point Message
+      summary: Message containing point information.
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/Point'
+
+    Reservation:
+      name: Reservation
+      title: Reservation Message
+      summary: Message containing reservation information.
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/Reservation'
+
+    PointHistoryArchive:
+      name: PointHistoryArchiveRequest
+      title: ポイント履歴アーカイブリクエスト
+      summary: ポイント履歴のアーカイブ処理をトリガーするメッセージ
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/PointHistoryArchive'

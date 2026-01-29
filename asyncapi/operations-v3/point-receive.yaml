@@ -1,0 +1,4 @@
+action: receive
+channel:
+  $ref: '../channels-v3/point/updated.yaml'
+summary: Receive point update

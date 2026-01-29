@@ -6,10 +6,35 @@ info:
 
 servers:
   dev:
-    $ref: ./servers/rabbitmq.yaml
+    url: amqp://rabbitmq:5672
+    protocol: amqp
+    description: Development RabbitMQ server
+    security:
+      - user-password: []
 
 channels:
-  $ref: ./channels/index.yaml
+  point.updated:
+    $ref: ./channels/point/updated.yaml
+  reservation.created:
+    $ref: ./channels/reservation/created.yaml
+  point.history.archived:
+    $ref: ./channels/point/history_archived.yaml
 
 components:
-  $ref: ./components/index.yaml
+  schemas:
+    Point:
+      $ref: ./components/schemas/point.yaml
+    Reservation:
+      $ref: ./components/schemas/reservation.yaml
+    PointHistoryArchive:
+      $ref: ./components/schemas/point-history-archive.yaml
+  messages:
+    Point:
+      $ref: ./components/messages/point.yaml
+    Reservation:
+      $ref: ./components/messages/reservation.yaml
+    PointHistoryArchive:
+      $ref: ./components/messages/point-history-archive.yaml
+  securitySchemes:
+    user-password:
+      type: userPassword

@@ -1,0 +1,4 @@
+action: send
+channel:
+  $ref: '../channels-v3/reservation/created.yaml'
+summary: Send reservation request

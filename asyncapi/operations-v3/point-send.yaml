@@ -1,0 +1,4 @@
+action: send
+channel:
+  $ref: '../channels-v3/point/updated.yaml'
+summary: Send point update

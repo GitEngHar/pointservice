@@ -1,0 +1,4 @@
+action: send
+channel:
+  $ref: '../channels-v3/point/history_archived.yaml'
+summary: Send history archive request

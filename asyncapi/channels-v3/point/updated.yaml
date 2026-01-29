@@ -1,0 +1,5 @@
+address: point.updated
+description: Queue for sending and receiving point updates.
+messages:
+  Point:
+    $ref: '#/components/messages/Point'

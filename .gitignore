@@ -1,2 +1,4 @@
 ./local-env.sh
 html/
+# AsyncAPI bundled files
+asyncapi/*-bundled.yaml
