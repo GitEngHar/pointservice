@@ -66,12 +66,6 @@ func (s StubPointRepository) UpdatePointOrCreateByUserID(ctx context.Context, po
 	return nil
 }
 
-type StubProducer struct{}
-
-func (s StubProducer) PublishPoint(ctx context.Context, point domain.Point) error {
-	return nil
-}
-
 func Test_Execute(t *testing.T) {
 	type args struct {
 		context.Context

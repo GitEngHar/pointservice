@@ -3,7 +3,11 @@ name: PR Agent Review
 on:
   pull_request:
     types: [opened, synchronize, ready_for_review]
+  workflow_dispatch:
 
+permissions:
+  issues: write
+  pull-requests: write
 jobs:
   pr-agent:
     runs-on: ubuntu-latest
@@ -11,5 +15,8 @@ jobs:
       - name: PR Agent
         uses: Codium-ai/pr-agent@main
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_ACTION_CONFIG.AUTO_DESCRIBE: true
+          GITHUB_ACTION_CONFIG.AUTO_REVIEW: true
+          GITHUB_ACTION_CONFIG.AUTO_IMPROVE: true
