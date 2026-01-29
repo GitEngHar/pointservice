@@ -1,0 +1,21 @@
+[pr_reviewer]
+enable = true
+require_tests = false
+require_description = true
+approve_if_no_comments = true
+review_focus = [
+  "bug risks",
+  "readability",
+  "architecture",
+  "async safety",
+  "error handling"
+]
+
+[pr_description]
+generate = true
+
+[pr_code_suggestions]
+enable = true
+
+[pr_auto_approve]
+enable = true
