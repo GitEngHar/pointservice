@@ -1,0 +1,5 @@
+address: reservation.created
+description: Queue for sending reservation requests.
+messages:
+  Reservation:
+    $ref: '#/components/messages/Reservation'

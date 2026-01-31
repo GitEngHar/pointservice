@@ -1,0 +1,5 @@
+address: point.history.archived
+description: Queue for point history archive requests.
+messages:
+  PointHistoryArchive:
+    $ref: '#/components/messages/PointHistoryArchive'
