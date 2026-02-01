@@ -40,6 +40,7 @@ spec:
   objects: []
   assertions:
     noise:
+      body.reservation_id: []
       body.execute_at: []
       header.Date: []
   created: 1769934420

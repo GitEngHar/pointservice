@@ -1371,7 +1371,7 @@ spec:
             last_insert_id: 0
             status_flags: 2
             warnings: 0
-            info: '(Rows matched: 1  Changed: 1  Warnings: 0'
+            info: '(Rows matched: 1  Changed: 1  Warnings: 0)'
     created: 1769933755
     reqtimestampmock: 2026-02-01T08:15:55.037638258Z
     restimestampmock: 2026-02-01T08:15:55.074635383Z
