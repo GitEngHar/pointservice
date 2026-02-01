@@ -5,49 +5,50 @@ name: test-3
 spec:
   metadata: {}
   req:
-    method: GET
+    method: PUT
     proto_major: 1
     proto_minor: 1
-    url: http://127.0.0.1:1323/point/confirm
+    url: http://127.0.0.1:1323/point/sub
     header:
       Accept: application/json, text/plain, */*
       Accept-Encoding: gzip, compress, deflate, br
       Connection: keep-alive
-      Content-Length: "28"
+      Content-Length: "47"
       Content-Type: application/json
       Host: 127.0.0.1:1323
-      Request-Start-Time: "1769933294994"
+      Request-Start-Time: "1769933755028"
       User-Agent: bruno-runtime/3.0.1
     body: |-
       {
-        "user_id":"TestUser01"
+        "user_id":"TestUser01",
+        "point_num":100
       }
-    timestamp: 2026-02-01T08:08:14.995630461Z
+    timestamp: 2026-02-01T08:15:55.030966508Z
   resp:
     status_code: 200
     header:
-      Content-Length: "52"
+      Content-Length: "34"
       Content-Type: application/json
-      Date: Sun, 01 Feb 2026 08:08:15 GMT
+      Date: Sun, 01 Feb 2026 08:15:55 GMT
     body: |
-      {"messages":["userID: TestUser01","pointNum: 100"]}
+      {"messages":["point subtracted"]}
     status_message: OK
     proto_major: 0
     proto_minor: 0
-    timestamp: 2026-02-01T08:08:15.001082295Z
+    timestamp: 2026-02-01T08:15:55.074900924Z
   objects: []
   assertions:
     noise:
       header.Date: []
-  created: 1769933295
+  created: 1769933755
 curl: |-
-  curl --request GET \
-    --url http://127.0.0.1:1323/point/confirm \
+  curl --request PUT \
+    --url http://127.0.0.1:1323/point/sub \
+    --header 'Content-Type: application/json' \
+    --header 'Host: 127.0.0.1:1323' \
+    --header 'Request-Start-Time: 1769933755028' \
+    --header 'User-Agent: bruno-runtime/3.0.1' \
     --header 'Accept: application/json, text/plain, */*' \
     --header 'Accept-Encoding: gzip, compress, deflate, br' \
     --header 'Connection: keep-alive' \
-    --header 'Content-Type: application/json' \
-    --header 'Host: 127.0.0.1:1323' \
-    --header 'Request-Start-Time: 1769933294994' \
-    --header 'User-Agent: bruno-runtime/3.0.1' \
-    --data "{\n  \"user_id\":\"TestUser01\"\n}"
+    --data "{\n  \"user_id\":\"TestUser01\",\n  \"point_num\":100\n}"
