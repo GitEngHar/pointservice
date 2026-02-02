@@ -30,7 +30,7 @@ test:
     coverageReportPath: ""
     ignoreOrdering: true
     mongoPassword: default@123
-    language: ""
+    language: "go"
     removeUnusedMocks: false
     fallBackOnMiss: false
     jacocoAgentPath: ""
