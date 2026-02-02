@@ -1,4 +1,6 @@
 ./local-env.sh
 html/
+html-v3/
+node_modules/
 # AsyncAPI bundled files
 asyncapi/*-bundled.yaml
