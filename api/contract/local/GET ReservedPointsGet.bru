@@ -1,0 +1,16 @@
+meta {
+  name: GET ReservedPoints
+  type: http
+  seq: 10
+}
+
+get {
+  url: http://127.0.0.1:1323/users/User01/reserved-points
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

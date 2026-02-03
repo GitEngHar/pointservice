@@ -1,0 +1,33 @@
+get:
+  summary: Get reserved points by user
+  tags:
+    - reservation
+  parameters:
+    - name: user_id
+      in: path
+      required: true
+      schema:
+        type: string
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/reservation.yaml#/ReservedPointList'
+    "400":
+      description: Bad Request (user not found)
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+                  details:
+                    type: object
