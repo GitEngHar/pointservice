@@ -95,6 +95,9 @@ func (p *PointHandler) PointReserve(c echo.Context) error {
 func (p *PointHandler) GetReservedPoints(c echo.Context) error {
 	ctx := c.Request().Context()
 	userID := c.Param("user_id") // URLパラメータからuser_idを取得
+	if userID == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "user_id is required")
+	}
 
 	input := &usecase.ReservationListInput{
 		UserID: userID,

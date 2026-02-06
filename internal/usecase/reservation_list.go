@@ -37,6 +37,10 @@ func NewReservationListUsecase(repo domain.ReservationRepository) *ReservationLi
 }
 
 func (u *ReservationListUsecase) Execute(ctx context.Context, input *ReservationListInput) (*ReservationListOutput, error) {
+	if input == nil || input.UserID == "" {
+		return nil, fmt.Errorf("userID is required")
+	}
+
 	// 1. Repositoryからデータを取得
 	reservations, err := u.repo.FindByUserID(ctx, input.UserID)
 	if err != nil {
