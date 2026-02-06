@@ -103,3 +103,47 @@ func (r ReservationRepository) UpdateStatus(ctx context.Context, id string, stat
 	}
 	return nil
 }
+
+// ユーザーIDに紐づく予約一覧を取得する。
+func (r ReservationRepository) FindByUserID(ctx context.Context, userID string) ([]domain.Reservation, error) {
+	query := `
+		SELECT id, user_id, point_amount, execute_at, status, idempotency_key, created_at, updated_at
+		FROM point_reservations
+		WHERE user_id = ?
+		ORDER BY execute_at ASC`
+
+	rows, err := r.db.QueryContext(ctx, query, userID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query reservations: %w", err)
+	}
+	defer rows.Close()
+
+	var reservations []domain.Reservation
+	for rows.Next() {
+		var res domain.Reservation
+		if err := rows.Scan(
+			&res.ID,
+			&res.UserID,
+			&res.PointAmount,
+			&res.ExecuteAt,
+			&res.Status,
+			&res.IdempotencyKey,
+			&res.CreatedAt,
+			&res.UpdatedAt,
+		); err != nil {
+			return nil, fmt.Errorf("failed to scan reservation: %w", err)
+		}
+		reservations = append(reservations, res)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("rows iteration error: %w", err)
+	}
+
+	if reservations == nil {
+		// 0件の場合は空配列を返す（nilだとJSONにしたときnullになる可能性があるが、Goのスライスはnilでもmarshalできる。明示的に空配列にしておくのが安全）
+		return []domain.Reservation{}, nil
+	}
+
+	return reservations, nil
+}

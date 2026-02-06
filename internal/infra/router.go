@@ -22,6 +22,7 @@ func (r *Router) Exec(h *presentation.PointHandler) {
 	e.PUT("/point/sub", h.PointSub)
 	e.GET("/point/confirm", h.PointConfirm)
 	e.POST("/point/reserve", h.PointReserve)
+	e.GET("/users/:user_id/reserved-points", h.GetReservedPoints)
 	e.GET("/", h.HealthCheck)
 	e.GET("/health", h.HealthCheck)
 	e.GET("/health/", h.HealthCheck)

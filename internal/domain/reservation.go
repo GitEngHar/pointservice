@@ -23,6 +23,7 @@ type (
 		Create(ctx context.Context, reservation Reservation) error                              // 予約を保存する
 		GetPendingReservations(ctx context.Context, executeAt time.Time) ([]Reservation, error) // 「待ち状態」で「実行時間を過ぎている」予約を探してくる
 		UpdateStatus(ctx context.Context, id string, status ReservationStatus) error            // 予約の状態を更新する
+		FindByUserID(ctx context.Context, userID string) ([]Reservation, error)                 // ユーザーIDに紐づく予約一覧を取得する
 	}
 
 	Reservation struct {

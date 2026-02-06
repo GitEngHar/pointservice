@@ -6,3 +6,5 @@
   $ref: ./point/confirm.yaml
 /point/reserve:
   $ref: ./reservation/create.yaml
+/users/{user_id}/reserved-points:
+  $ref: ./reservation/list.yaml

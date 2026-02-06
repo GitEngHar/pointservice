@@ -27,6 +27,10 @@ func (s *StubReservationRepository) UpdateStatus(ctx context.Context, id string,
 	return nil
 }
 
+func (s *StubReservationRepository) FindByUserID(ctx context.Context, userID string) ([]domain.Reservation, error) {
+	return nil, nil
+}
+
 func TestReservationCreate_Success(t *testing.T) {
 	t.Parallel()
 
