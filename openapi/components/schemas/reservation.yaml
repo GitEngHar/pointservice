@@ -25,3 +25,34 @@ ReservationCreateOutput:
     execute_at:
       type: string
       format: date-time
+
+ReservedPoint:
+  type: object
+  properties:
+    point:
+      type: integer
+      description: 付与予定ポイント数
+      example: 100
+    status:
+      type: string
+      description: 予約ステータス
+      example: reserved
+    add_date:
+      type: string
+      format: date-time
+      description: 付与予定日
+      example: "2026-01-10T13:10:00+09:00"
+  required:
+    - point
+    - status
+    - add_date
+
+ReservedPointList:
+  type: object
+  properties:
+    reserved_points:
+      type: array
+      items:
+        $ref: '#/ReservedPoint'
+  required:
+    - reserved_points
